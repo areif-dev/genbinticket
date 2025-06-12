@@ -28,21 +28,35 @@
         align-items: center;
         border: 1px solid #000;
         box-sizing: border-box;
-        font-family: Arial, sans-serif;
+        font-family: "Cascadia Code", "Courier New", Courier, monospace;
         overflow: hidden;
       }
-      .details {
-        font-size: 6pt;
-        width: 50%;
+      .price {
         font-family: "Cascadia Code", "Courier New", Courier, monospace;
+        font-size: 0.267in;
+        font-weight: bold;
+      }
+      .sku {
+        font-family: "Cascadia Code", "Courier New", Courier, monospace;
+        font-size: 0.133in;
+        font-weight: bold;
+      }
+      .description {
+        font-family: "Cascadia Code", "Courier New", Courier, monospace;
+        font-size: 0.117in;
+        font-weight: bold;
+      }
+      .small-text {
+        font-family: "Cascadia Code", "Courier New", Courier, monospace;
+        font-size: 0.083in;
       }
       .barcode {
-        height: 0.9in;
-        width: auto;
+        height: 0.207in;
+        width: 0.73in;
       }
       .product-image {
-        height: 100%;
-        max-width: 30%;
+        height: 1in;
+        max-width: 0.62in;
         overflow: hidden;
         object-fit: cover;
       }
@@ -51,21 +65,19 @@
   <body>
     <div class="page">
       <div class="label">
-        <div class="details">
-          <p>
-            Bradley: 571718<br />
-            FloridaHardware: _______<br />
-            TrueValue: _______<br />
-            UPC: 766501000856<br />
-            MARSHALL FERRET AND SMALL ANIMAL ODOR REMOVER
-          </p>
-        </div>
+        <div class="price">$8.29</div>
+        <div class="sku">SKU1234</div>
+        <div class="description">Short Description</div>
+        <div class="small-text">0019200771-825</div>
+        <img src="./barcodes/897227002036.bmp" alt="Barcode" class="barcode" />
+        <div class="small-text">BCI: 12345</div>
+        <div class="small-text">IDS: 27568914</div>
+        <div class="small-text">TV: 123456</div>
         <img
           src="https://www.floridahardware.com/Resources/21140/thumbnail/22611046.jpg"
           alt="Product Image"
           class="product-image"
         />
-        <img src="./barcodes/897227002036.bmp" alt="Barcode" class="barcode" />
       </div>
       <div class="label">
         <div class="details">
