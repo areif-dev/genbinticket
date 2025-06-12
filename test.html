@@ -12,7 +12,7 @@
       .page {
         width: 8.5in;
         height: 11in;
-        padding: 12.4mm 4.54mm 12.4mm 4.54mm;
+        padding: 13.5mm 4.54mm 10.3mm 4.54mm;
         display: flex;
         flex-wrap: wrap;
         justify-content: space-between;
@@ -21,6 +21,7 @@
         page-break-after: always;
       }
       .label {
+        position: relative;
         width: 2.625in;
         height: 1in;
         display: flex;
@@ -30,31 +31,73 @@
         box-sizing: border-box;
         font-family: "Cascadia Code", "Courier New", Courier, monospace;
         overflow: hidden;
+        margin-bottom: 0.1mm;
       }
       .price {
+        position: absolute;
+        top: 0.033in;
+        left: 0.033in;
+        max-width: 1.26in;
+        max-height: 0.269in;
         font-family: "Cascadia Code", "Courier New", Courier, monospace;
         font-size: 0.267in;
         font-weight: bold;
+        overflow: hidden;
       }
       .sku {
+        position: absolute;
+        top: 0.33in;
+        left: 0.033in;
+        max-width: 1.26in;
+        max-height: 0.134in;
         font-family: "Cascadia Code", "Courier New", Courier, monospace;
         font-size: 0.133in;
         font-weight: bold;
+        overflow: hidden;
       }
       .description {
+        position: absolute;
+        top: 0.47in;
+        left: 0.033in;
+        max-width: 1.26in;
+        max-height: 0.118in;
         font-family: "Cascadia Code", "Courier New", Courier, monospace;
         font-size: 0.117in;
         font-weight: bold;
+        overflow: hidden;
+      }
+      .upc-text {
+        position: absolute;
+        top: 0.663in;
+        left: 0.033in;
+        max-width: 1.26in;
+        font-family: "Cascadia Code", "Courier New", Courier, monospace;
+        font-size: 0.083in;
       }
       .small-text {
         font-family: "Cascadia Code", "Courier New", Courier, monospace;
         font-size: 0.083in;
       }
+      .alt-code-box {
+        position: absolute;
+        display: block;
+        top: 0.033in;
+        left: 1.3in;
+        max-height: 0.968in;
+        max-width: 0.697in;
+        overflow: hidden;
+      }
       .barcode {
+        position: absolute;
+        top: 0.757in;
+        left: 0.033in;
         height: 0.207in;
         width: 0.73in;
       }
       .product-image {
+        position: absolute;
+        top: 0in;
+        left: 2in;
         height: 1in;
         max-width: 0.62in;
         overflow: hidden;
@@ -68,11 +111,13 @@
         <div class="price">$8.29</div>
         <div class="sku">SKU1234</div>
         <div class="description">Short Description</div>
-        <div class="small-text">0019200771-825</div>
-        <img src="./barcodes/897227002036.bmp" alt="Barcode" class="barcode" />
-        <div class="small-text">BCI: 12345</div>
-        <div class="small-text">IDS: 27568914</div>
-        <div class="small-text">TV: 123456</div>
+        <div class="upc-text">0019200771-825</div>
+        <img src="./barcode.png" alt="Barcode" class="barcode" />
+        <div class="alt-code-box">
+          <div class="small-text">BCI: 12345</div>
+          <div class="small-text">IDS: 275689113124</div>
+          <div class="small-text">TV: 123456</div>
+        </div>
         <img
           src="https://www.floridahardware.com/Resources/21140/thumbnail/22611046.jpg"
           alt="Product Image"
@@ -80,497 +125,526 @@
         />
       </div>
       <div class="label">
-        <div class="details">
-          <p>
-            Bradley: 571718<br />
-            FloridaHardware: _______<br />
-            TrueValue: _______<br />
-            UPC: 766501000856<br />
-            MARSHALL FERRET AND SMALL ANIMAL ODOR REMOVER
-          </p>
+        <div class="price">$8.29</div>
+        <div class="sku">SKU1234</div>
+        <div class="description">Short Description</div>
+        <div class="upc-text">0019200771-825</div>
+        <img src="./barcode.png" alt="Barcode" class="barcode" />
+        <div class="alt-code-box">
+          <div class="small-text">BCI: 12345</div>
+          <div class="small-text">IDS: 275689113124</div>
+          <div class="small-text">TV: 123456</div>
         </div>
+        <div class="vertical-line"></div>
         <img
           src="https://www.floridahardware.com/Resources/21140/thumbnail/22611046.jpg"
           alt="Product Image"
           class="product-image"
         />
-        <img src="./barcodes/897227002036.bmp" alt="Barcode" class="barcode" />
       </div>
       <div class="label">
-        <div class="details">
-          <p>
-            Bradley: 571718<br />
-            FloridaHardware: _______<br />
-            TrueValue: _______<br />
-            UPC: 766501000856<br />
-            MARSHALL FERRET AND SMALL ANIMAL ODOR REMOVER
-          </p>
+        <div class="price">$8.29</div>
+        <div class="sku">SKU1234</div>
+        <div class="description">Short Description</div>
+        <div class="upc-text">0019200771-825</div>
+        <img src="./barcode.png" alt="Barcode" class="barcode" />
+        <div class="alt-code-box">
+          <div class="small-text">BCI: 12345</div>
+          <div class="small-text">IDS: 275689113124</div>
+          <div class="small-text">TV: 123456</div>
         </div>
+        <div class="vertical-line"></div>
         <img
           src="https://www.floridahardware.com/Resources/21140/thumbnail/22611046.jpg"
           alt="Product Image"
           class="product-image"
         />
-        <img src="./barcodes/897227002036.bmp" alt="Barcode" class="barcode" />
       </div>
       <div class="label">
-        <div class="details">
-          <p>
-            Bradley: 571718<br />
-            FloridaHardware: _______<br />
-            TrueValue: _______<br />
-            UPC: 766501000856<br />
-            MARSHALL FERRET AND SMALL ANIMAL ODOR REMOVER
-          </p>
+        <div class="price">$8.29</div>
+        <div class="sku">SKU1234</div>
+        <div class="description">Short Description</div>
+        <div class="upc-text">0019200771-825</div>
+        <img src="./barcode.png" alt="Barcode" class="barcode" />
+        <div class="alt-code-box">
+          <div class="small-text">BCI: 12345</div>
+          <div class="small-text">IDS: 275689113124</div>
+          <div class="small-text">TV: 123456</div>
         </div>
+        <div class="vertical-line"></div>
         <img
           src="https://www.floridahardware.com/Resources/21140/thumbnail/22611046.jpg"
           alt="Product Image"
           class="product-image"
         />
-        <img src="./barcodes/897227002036.bmp" alt="Barcode" class="barcode" />
       </div>
       <div class="label">
-        <div class="details">
-          <p>
-            Bradley: 571718<br />
-            FloridaHardware: _______<br />
-            TrueValue: _______<br />
-            UPC: 766501000856<br />
-            MARSHALL FERRET AND SMALL ANIMAL ODOR REMOVER
-          </p>
+        <div class="price">$8.29</div>
+        <div class="sku">SKU1234</div>
+        <div class="description">Short Description</div>
+        <div class="upc-text">0019200771-825</div>
+        <img src="./barcode.png" alt="Barcode" class="barcode" />
+        <div class="alt-code-box">
+          <div class="small-text">BCI: 12345</div>
+          <div class="small-text">IDS: 275689113124</div>
+          <div class="small-text">TV: 123456</div>
         </div>
+        <div class="vertical-line"></div>
         <img
           src="https://www.floridahardware.com/Resources/21140/thumbnail/22611046.jpg"
           alt="Product Image"
           class="product-image"
         />
-        <img src="./barcodes/897227002036.bmp" alt="Barcode" class="barcode" />
       </div>
       <div class="label">
-        <div class="details">
-          <p>
-            Bradley: 571718<br />
-            FloridaHardware: _______<br />
-            TrueValue: _______<br />
-            UPC: 766501000856<br />
-            MARSHALL FERRET AND SMALL ANIMAL ODOR REMOVER
-          </p>
+        <div class="price">$8.29</div>
+        <div class="sku">SKU1234</div>
+        <div class="description">Short Description</div>
+        <div class="upc-text">0019200771-825</div>
+        <img src="./barcode.png" alt="Barcode" class="barcode" />
+        <div class="alt-code-box">
+          <div class="small-text">BCI: 12345</div>
+          <div class="small-text">IDS: 275689113124</div>
+          <div class="small-text">TV: 123456</div>
         </div>
+        <div class="vertical-line"></div>
         <img
           src="https://www.floridahardware.com/Resources/21140/thumbnail/22611046.jpg"
           alt="Product Image"
           class="product-image"
         />
-        <img src="./barcodes/897227002036.bmp" alt="Barcode" class="barcode" />
       </div>
       <div class="label">
-        <div class="details">
-          <p>
-            Bradley: 571718<br />
-            FloridaHardware: _______<br />
-            TrueValue: _______<br />
-            UPC: 766501000856<br />
-            MARSHALL FERRET AND SMALL ANIMAL ODOR REMOVER
-          </p>
+        <div class="price">$8.29</div>
+        <div class="sku">SKU1234</div>
+        <div class="description">Short Description</div>
+        <div class="upc-text">0019200771-825</div>
+        <img src="./barcode.png" alt="Barcode" class="barcode" />
+        <div class="alt-code-box">
+          <div class="small-text">BCI: 12345</div>
+          <div class="small-text">IDS: 275689113124</div>
+          <div class="small-text">TV: 123456</div>
         </div>
+        <div class="vertical-line"></div>
         <img
           src="https://www.floridahardware.com/Resources/21140/thumbnail/22611046.jpg"
           alt="Product Image"
           class="product-image"
         />
-        <img src="./barcodes/897227002036.bmp" alt="Barcode" class="barcode" />
       </div>
       <div class="label">
-        <div class="details">
-          <p>
-            Bradley: 571718<br />
-            FloridaHardware: _______<br />
-            TrueValue: _______<br />
-            UPC: 766501000856<br />
-            MARSHALL FERRET AND SMALL ANIMAL ODOR REMOVER
-          </p>
+        <div class="price">$8.29</div>
+        <div class="sku">SKU1234</div>
+        <div class="description">Short Description</div>
+        <div class="upc-text">0019200771-825</div>
+        <img src="./barcode.png" alt="Barcode" class="barcode" />
+        <div class="alt-code-box">
+          <div class="small-text">BCI: 12345</div>
+          <div class="small-text">IDS: 275689113124</div>
+          <div class="small-text">TV: 123456</div>
         </div>
+        <div class="vertical-line"></div>
         <img
           src="https://www.floridahardware.com/Resources/21140/thumbnail/22611046.jpg"
           alt="Product Image"
           class="product-image"
         />
-        <img src="./barcodes/897227002036.bmp" alt="Barcode" class="barcode" />
       </div>
       <div class="label">
-        <div class="details">
-          <p>
-            Bradley: 571718<br />
-            FloridaHardware: _______<br />
-            TrueValue: _______<br />
-            UPC: 766501000856<br />
-            MARSHALL FERRET AND SMALL ANIMAL ODOR REMOVER
-          </p>
+        <div class="price">$8.29</div>
+        <div class="sku">SKU1234</div>
+        <div class="description">Short Description</div>
+        <div class="upc-text">0019200771-825</div>
+        <img src="./barcode.png" alt="Barcode" class="barcode" />
+        <div class="alt-code-box">
+          <div class="small-text">BCI: 12345</div>
+          <div class="small-text">IDS: 275689113124</div>
+          <div class="small-text">TV: 123456</div>
         </div>
+        <div class="vertical-line"></div>
         <img
           src="https://www.floridahardware.com/Resources/21140/thumbnail/22611046.jpg"
           alt="Product Image"
           class="product-image"
         />
-        <img src="./barcodes/897227002036.bmp" alt="Barcode" class="barcode" />
       </div>
       <div class="label">
-        <div class="details">
-          <p>
-            Bradley: 571718<br />
-            FloridaHardware: _______<br />
-            TrueValue: _______<br />
-            UPC: 766501000856<br />
-            MARSHALL FERRET AND SMALL ANIMAL ODOR REMOVER
-          </p>
+        <div class="price">$8.29</div>
+        <div class="sku">SKU1234</div>
+        <div class="description">Short Description</div>
+        <div class="upc-text">0019200771-825</div>
+        <img src="./barcode.png" alt="Barcode" class="barcode" />
+        <div class="alt-code-box">
+          <div class="small-text">BCI: 12345</div>
+          <div class="small-text">IDS: 275689113124</div>
+          <div class="small-text">TV: 123456</div>
         </div>
+        <div class="vertical-line"></div>
         <img
           src="https://www.floridahardware.com/Resources/21140/thumbnail/22611046.jpg"
           alt="Product Image"
           class="product-image"
         />
-        <img src="./barcodes/897227002036.bmp" alt="Barcode" class="barcode" />
       </div>
       <div class="label">
-        <div class="details">
-          <p>
-            Bradley: 571718<br />
-            FloridaHardware: _______<br />
-            TrueValue: _______<br />
-            UPC: 766501000856<br />
-            MARSHALL FERRET AND SMALL ANIMAL ODOR REMOVER
-          </p>
+        <div class="price">$8.29</div>
+        <div class="sku">SKU1234</div>
+        <div class="description">Short Description</div>
+        <div class="upc-text">0019200771-825</div>
+        <img src="./barcode.png" alt="Barcode" class="barcode" />
+        <div class="alt-code-box">
+          <div class="small-text">BCI: 12345</div>
+          <div class="small-text">IDS: 275689113124</div>
+          <div class="small-text">TV: 123456</div>
         </div>
+        <div class="vertical-line"></div>
         <img
           src="https://www.floridahardware.com/Resources/21140/thumbnail/22611046.jpg"
           alt="Product Image"
           class="product-image"
         />
-        <img src="./barcodes/897227002036.bmp" alt="Barcode" class="barcode" />
       </div>
       <div class="label">
-        <div class="details">
-          <p>
-            Bradley: 571718<br />
-            FloridaHardware: _______<br />
-            TrueValue: _______<br />
-            UPC: 766501000856<br />
-            MARSHALL FERRET AND SMALL ANIMAL ODOR REMOVER
-          </p>
+        <div class="price">$8.29</div>
+        <div class="sku">SKU1234</div>
+        <div class="description">Short Description</div>
+        <div class="upc-text">0019200771-825</div>
+        <img src="./barcode.png" alt="Barcode" class="barcode" />
+        <div class="alt-code-box">
+          <div class="small-text">BCI: 12345</div>
+          <div class="small-text">IDS: 275689113124</div>
+          <div class="small-text">TV: 123456</div>
         </div>
+        <div class="vertical-line"></div>
         <img
           src="https://www.floridahardware.com/Resources/21140/thumbnail/22611046.jpg"
           alt="Product Image"
           class="product-image"
         />
-        <img src="./barcodes/897227002036.bmp" alt="Barcode" class="barcode" />
       </div>
       <div class="label">
-        <div class="details">
-          <p>
-            Bradley: 571718<br />
-            FloridaHardware: _______<br />
-            TrueValue: _______<br />
-            UPC: 766501000856<br />
-            MARSHALL FERRET AND SMALL ANIMAL ODOR REMOVER
-          </p>
+        <div class="price">$8.29</div>
+        <div class="sku">SKU1234</div>
+        <div class="description">Short Description</div>
+        <div class="upc-text">0019200771-825</div>
+        <img src="./barcode.png" alt="Barcode" class="barcode" />
+        <div class="alt-code-box">
+          <div class="small-text">BCI: 12345</div>
+          <div class="small-text">IDS: 275689113124</div>
+          <div class="small-text">TV: 123456</div>
         </div>
+        <div class="vertical-line"></div>
         <img
           src="https://www.floridahardware.com/Resources/21140/thumbnail/22611046.jpg"
           alt="Product Image"
           class="product-image"
         />
-        <img src="./barcodes/897227002036.bmp" alt="Barcode" class="barcode" />
       </div>
       <div class="label">
-        <div class="details">
-          <p>
-            Bradley: 571718<br />
-            FloridaHardware: _______<br />
-            TrueValue: _______<br />
-            UPC: 766501000856<br />
-            MARSHALL FERRET AND SMALL ANIMAL ODOR REMOVER
-          </p>
+        <div class="price">$8.29</div>
+        <div class="sku">SKU1234</div>
+        <div class="description">Short Description</div>
+        <div class="upc-text">0019200771-825</div>
+        <img src="./barcode.png" alt="Barcode" class="barcode" />
+        <div class="alt-code-box">
+          <div class="small-text">BCI: 12345</div>
+          <div class="small-text">IDS: 275689113124</div>
+          <div class="small-text">TV: 123456</div>
         </div>
+        <div class="vertical-line"></div>
         <img
           src="https://www.floridahardware.com/Resources/21140/thumbnail/22611046.jpg"
           alt="Product Image"
           class="product-image"
         />
-        <img src="./barcodes/897227002036.bmp" alt="Barcode" class="barcode" />
       </div>
       <div class="label">
-        <div class="details">
-          <p>
-            Bradley: 571718<br />
-            FloridaHardware: _______<br />
-            TrueValue: _______<br />
-            UPC: 766501000856<br />
-            MARSHALL FERRET AND SMALL ANIMAL ODOR REMOVER
-          </p>
+        <div class="price">$8.29</div>
+        <div class="sku">SKU1234</div>
+        <div class="description">Short Description</div>
+        <div class="upc-text">0019200771-825</div>
+        <img src="./barcode.png" alt="Barcode" class="barcode" />
+        <div class="alt-code-box">
+          <div class="small-text">BCI: 12345</div>
+          <div class="small-text">IDS: 275689113124</div>
+          <div class="small-text">TV: 123456</div>
         </div>
+        <div class="vertical-line"></div>
         <img
           src="https://www.floridahardware.com/Resources/21140/thumbnail/22611046.jpg"
           alt="Product Image"
           class="product-image"
         />
-        <img src="./barcodes/897227002036.bmp" alt="Barcode" class="barcode" />
       </div>
       <div class="label">
-        <div class="details">
-          <p>
-            Bradley: 571718<br />
-            FloridaHardware: _______<br />
-            TrueValue: _______<br />
-            UPC: 766501000856<br />
-            MARSHALL FERRET AND SMALL ANIMAL ODOR REMOVER
-          </p>
+        <div class="price">$8.29</div>
+        <div class="sku">SKU1234</div>
+        <div class="description">Short Description</div>
+        <div class="upc-text">0019200771-825</div>
+        <img src="./barcode.png" alt="Barcode" class="barcode" />
+        <div class="alt-code-box">
+          <div class="small-text">BCI: 12345</div>
+          <div class="small-text">IDS: 275689113124</div>
+          <div class="small-text">TV: 123456</div>
         </div>
+        <div class="vertical-line"></div>
         <img
           src="https://www.floridahardware.com/Resources/21140/thumbnail/22611046.jpg"
           alt="Product Image"
           class="product-image"
         />
-        <img src="./barcodes/897227002036.bmp" alt="Barcode" class="barcode" />
       </div>
       <div class="label">
-        <div class="details">
-          <p>
-            Bradley: 571718<br />
-            FloridaHardware: _______<br />
-            TrueValue: _______<br />
-            UPC: 766501000856<br />
-            MARSHALL FERRET AND SMALL ANIMAL ODOR REMOVER
-          </p>
+        <div class="price">$8.29</div>
+        <div class="sku">SKU1234</div>
+        <div class="description">Short Description</div>
+        <div class="upc-text">0019200771-825</div>
+        <img src="./barcode.png" alt="Barcode" class="barcode" />
+        <div class="alt-code-box">
+          <div class="small-text">BCI: 12345</div>
+          <div class="small-text">IDS: 275689113124</div>
+          <div class="small-text">TV: 123456</div>
         </div>
+        <div class="vertical-line"></div>
         <img
           src="https://www.floridahardware.com/Resources/21140/thumbnail/22611046.jpg"
           alt="Product Image"
           class="product-image"
         />
-        <img src="./barcodes/897227002036.bmp" alt="Barcode" class="barcode" />
       </div>
       <div class="label">
-        <div class="details">
-          <p>
-            Bradley: 571718<br />
-            FloridaHardware: _______<br />
-            TrueValue: _______<br />
-            UPC: 766501000856<br />
-            MARSHALL FERRET AND SMALL ANIMAL ODOR REMOVER
-          </p>
+        <div class="price">$8.29</div>
+        <div class="sku">SKU1234</div>
+        <div class="description">Short Description</div>
+        <div class="upc-text">0019200771-825</div>
+        <img src="./barcode.png" alt="Barcode" class="barcode" />
+        <div class="alt-code-box">
+          <div class="small-text">BCI: 12345</div>
+          <div class="small-text">IDS: 275689113124</div>
+          <div class="small-text">TV: 123456</div>
         </div>
+        <div class="vertical-line"></div>
         <img
           src="https://www.floridahardware.com/Resources/21140/thumbnail/22611046.jpg"
           alt="Product Image"
           class="product-image"
         />
-        <img src="./barcodes/897227002036.bmp" alt="Barcode" class="barcode" />
       </div>
       <div class="label">
-        <div class="details">
-          <p>
-            Bradley: 571718<br />
-            FloridaHardware: _______<br />
-            TrueValue: _______<br />
-            UPC: 766501000856<br />
-            MARSHALL FERRET AND SMALL ANIMAL ODOR REMOVER
-          </p>
+        <div class="price">$8.29</div>
+        <div class="sku">SKU1234</div>
+        <div class="description">Short Description</div>
+        <div class="upc-text">0019200771-825</div>
+        <img src="./barcode.png" alt="Barcode" class="barcode" />
+        <div class="alt-code-box">
+          <div class="small-text">BCI: 12345</div>
+          <div class="small-text">IDS: 275689113124</div>
+          <div class="small-text">TV: 123456</div>
         </div>
+        <div class="vertical-line"></div>
         <img
           src="https://www.floridahardware.com/Resources/21140/thumbnail/22611046.jpg"
           alt="Product Image"
           class="product-image"
         />
-        <img src="./barcodes/897227002036.bmp" alt="Barcode" class="barcode" />
       </div>
       <div class="label">
-        <div class="details">
-          <p>
-            Bradley: 571718<br />
-            FloridaHardware: _______<br />
-            TrueValue: _______<br />
-            UPC: 766501000856<br />
-            MARSHALL FERRET AND SMALL ANIMAL ODOR REMOVER
-          </p>
+        <div class="price">$8.29</div>
+        <div class="sku">SKU1234</div>
+        <div class="description">Short Description</div>
+        <div class="upc-text">0019200771-825</div>
+        <img src="./barcode.png" alt="Barcode" class="barcode" />
+        <div class="alt-code-box">
+          <div class="small-text">BCI: 12345</div>
+          <div class="small-text">IDS: 275689113124</div>
+          <div class="small-text">TV: 123456</div>
         </div>
+        <div class="vertical-line"></div>
         <img
           src="https://www.floridahardware.com/Resources/21140/thumbnail/22611046.jpg"
           alt="Product Image"
           class="product-image"
         />
-        <img src="./barcodes/897227002036.bmp" alt="Barcode" class="barcode" />
       </div>
       <div class="label">
-        <div class="details">
-          <p>
-            Bradley: 571718<br />
-            FloridaHardware: _______<br />
-            TrueValue: _______<br />
-            UPC: 766501000856<br />
-            MARSHALL FERRET AND SMALL ANIMAL ODOR REMOVER
-          </p>
+        <div class="price">$8.29</div>
+        <div class="sku">SKU1234</div>
+        <div class="description">Short Description</div>
+        <div class="upc-text">0019200771-825</div>
+        <img src="./barcode.png" alt="Barcode" class="barcode" />
+        <div class="alt-code-box">
+          <div class="small-text">BCI: 12345</div>
+          <div class="small-text">IDS: 275689113124</div>
+          <div class="small-text">TV: 123456</div>
         </div>
+        <div class="vertical-line"></div>
         <img
           src="https://www.floridahardware.com/Resources/21140/thumbnail/22611046.jpg"
           alt="Product Image"
           class="product-image"
         />
-        <img src="./barcodes/897227002036.bmp" alt="Barcode" class="barcode" />
       </div>
       <div class="label">
-        <div class="details">
-          <p>
-            Bradley: 571718<br />
-            FloridaHardware: _______<br />
-            TrueValue: _______<br />
-            UPC: 766501000856<br />
-            MARSHALL FERRET AND SMALL ANIMAL ODOR REMOVER
-          </p>
+        <div class="price">$8.29</div>
+        <div class="sku">SKU1234</div>
+        <div class="description">Short Description</div>
+        <div class="upc-text">0019200771-825</div>
+        <img src="./barcode.png" alt="Barcode" class="barcode" />
+        <div class="alt-code-box">
+          <div class="small-text">BCI: 12345</div>
+          <div class="small-text">IDS: 275689113124</div>
+          <div class="small-text">TV: 123456</div>
         </div>
+        <div class="vertical-line"></div>
         <img
           src="https://www.floridahardware.com/Resources/21140/thumbnail/22611046.jpg"
           alt="Product Image"
           class="product-image"
         />
-        <img src="./barcodes/897227002036.bmp" alt="Barcode" class="barcode" />
       </div>
       <div class="label">
-        <div class="details">
-          <p>
-            Bradley: 571718<br />
-            FloridaHardware: _______<br />
-            TrueValue: _______<br />
-            UPC: 766501000856<br />
-            MARSHALL FERRET AND SMALL ANIMAL ODOR REMOVER
-          </p>
+        <div class="price">$8.29</div>
+        <div class="sku">SKU1234</div>
+        <div class="description">Short Description</div>
+        <div class="upc-text">0019200771-825</div>
+        <img src="./barcode.png" alt="Barcode" class="barcode" />
+        <div class="alt-code-box">
+          <div class="small-text">BCI: 12345</div>
+          <div class="small-text">IDS: 275689113124</div>
+          <div class="small-text">TV: 123456</div>
         </div>
+        <div class="vertical-line"></div>
         <img
           src="https://www.floridahardware.com/Resources/21140/thumbnail/22611046.jpg"
           alt="Product Image"
           class="product-image"
         />
-        <img src="./barcodes/897227002036.bmp" alt="Barcode" class="barcode" />
       </div>
       <div class="label">
-        <div class="details">
-          <p>
-            Bradley: 571718<br />
-            FloridaHardware: _______<br />
-            TrueValue: _______<br />
-            UPC: 766501000856<br />
-            MARSHALL FERRET AND SMALL ANIMAL ODOR REMOVER
-          </p>
+        <div class="price">$8.29</div>
+        <div class="sku">SKU1234</div>
+        <div class="description">Short Description</div>
+        <div class="upc-text">0019200771-825</div>
+        <img src="./barcode.png" alt="Barcode" class="barcode" />
+        <div class="alt-code-box">
+          <div class="small-text">BCI: 12345</div>
+          <div class="small-text">IDS: 275689113124</div>
+          <div class="small-text">TV: 123456</div>
         </div>
+        <div class="vertical-line"></div>
         <img
           src="https://www.floridahardware.com/Resources/21140/thumbnail/22611046.jpg"
           alt="Product Image"
           class="product-image"
         />
-        <img src="./barcodes/897227002036.bmp" alt="Barcode" class="barcode" />
       </div>
       <div class="label">
-        <div class="details">
-          <p>
-            Bradley: 571718<br />
-            FloridaHardware: _______<br />
-            TrueValue: _______<br />
-            UPC: 766501000856<br />
-            MARSHALL FERRET AND SMALL ANIMAL ODOR REMOVER
-          </p>
+        <div class="price">$8.29</div>
+        <div class="sku">SKU1234</div>
+        <div class="description">Short Description</div>
+        <div class="upc-text">0019200771-825</div>
+        <img src="./barcode.png" alt="Barcode" class="barcode" />
+        <div class="alt-code-box">
+          <div class="small-text">BCI: 12345</div>
+          <div class="small-text">IDS: 275689113124</div>
+          <div class="small-text">TV: 123456</div>
         </div>
+        <div class="vertical-line"></div>
         <img
           src="https://www.floridahardware.com/Resources/21140/thumbnail/22611046.jpg"
           alt="Product Image"
           class="product-image"
         />
-        <img src="./barcodes/897227002036.bmp" alt="Barcode" class="barcode" />
       </div>
       <div class="label">
-        <div class="details">
-          <p>
-            Bradley: 571718<br />
-            FloridaHardware: _______<br />
-            TrueValue: _______<br />
-            UPC: 766501000856<br />
-            MARSHALL FERRET AND SMALL ANIMAL ODOR REMOVER
-          </p>
+        <div class="price">$8.29</div>
+        <div class="sku">SKU1234</div>
+        <div class="description">Short Description</div>
+        <div class="upc-text">0019200771-825</div>
+        <img src="./barcode.png" alt="Barcode" class="barcode" />
+        <div class="alt-code-box">
+          <div class="small-text">BCI: 12345</div>
+          <div class="small-text">IDS: 275689113124</div>
+          <div class="small-text">TV: 123456</div>
         </div>
+        <div class="vertical-line"></div>
         <img
           src="https://www.floridahardware.com/Resources/21140/thumbnail/22611046.jpg"
           alt="Product Image"
           class="product-image"
         />
-        <img src="./barcodes/897227002036.bmp" alt="Barcode" class="barcode" />
       </div>
       <div class="label">
-        <div class="details">
-          <p>
-            Bradley: 571718<br />
-            FloridaHardware: _______<br />
-            TrueValue: _______<br />
-            UPC: 766501000856<br />
-            MARSHALL FERRET AND SMALL ANIMAL ODOR REMOVER
-          </p>
+        <div class="price">$8.29</div>
+        <div class="sku">SKU1234</div>
+        <div class="description">Short Description</div>
+        <div class="upc-text">0019200771-825</div>
+        <img src="./barcode.png" alt="Barcode" class="barcode" />
+        <div class="alt-code-box">
+          <div class="small-text">BCI: 12345</div>
+          <div class="small-text">IDS: 275689113124</div>
+          <div class="small-text">TV: 123456</div>
         </div>
+        <div class="vertical-line"></div>
         <img
           src="https://www.floridahardware.com/Resources/21140/thumbnail/22611046.jpg"
           alt="Product Image"
           class="product-image"
         />
-        <img src="./barcodes/897227002036.bmp" alt="Barcode" class="barcode" />
       </div>
       <div class="label">
-        <div class="details">
-          <p>
-            Bradley: 571718<br />
-            FloridaHardware: _______<br />
-            TrueValue: _______<br />
-            UPC: 766501000856<br />
-            MARSHALL FERRET AND SMALL ANIMAL ODOR REMOVER
-          </p>
+        <div class="price">$8.29</div>
+        <div class="sku">SKU1234</div>
+        <div class="description">Short Description</div>
+        <div class="upc-text">0019200771-825</div>
+        <img src="./barcode.png" alt="Barcode" class="barcode" />
+        <div class="alt-code-box">
+          <div class="small-text">BCI: 12345</div>
+          <div class="small-text">IDS: 275689113124</div>
+          <div class="small-text">TV: 123456</div>
         </div>
+        <div class="vertical-line"></div>
         <img
           src="https://www.floridahardware.com/Resources/21140/thumbnail/22611046.jpg"
           alt="Product Image"
           class="product-image"
         />
-        <img src="./barcodes/897227002036.bmp" alt="Barcode" class="barcode" />
       </div>
       <div class="label">
-        <div class="details">
-          <p>
-            Bradley: 571718<br />
-            FloridaHardware: _______<br />
-            TrueValue: _______<br />
-            UPC: 766501000856<br />
-            MARSHALL FERRET AND SMALL ANIMAL ODOR REMOVER
-          </p>
+        <div class="price">$8.29</div>
+        <div class="sku">SKU1234</div>
+        <div class="description">Short Description</div>
+        <div class="upc-text">0019200771-825</div>
+        <img src="./barcode.png" alt="Barcode" class="barcode" />
+        <div class="alt-code-box">
+          <div class="small-text">BCI: 12345</div>
+          <div class="small-text">IDS: 275689113124</div>
+          <div class="small-text">TV: 123456</div>
         </div>
+        <div class="vertical-line"></div>
         <img
           src="https://www.floridahardware.com/Resources/21140/thumbnail/22611046.jpg"
           alt="Product Image"
           class="product-image"
         />
-        <img src="./barcodes/897227002036.bmp" alt="Barcode" class="barcode" />
       </div>
       <div class="label">
-        <div class="details">
-          <p>
-            Bradley: 571718<br />
-            FloridaHardware: _______<br />
-            TrueValue: _______<br />
-            UPC: 766501000856<br />
-            MARSHALL FERRET AND SMALL ANIMAL ODOR REMOVER
-          </p>
+        <div class="price">$8.29</div>
+        <div class="sku">SKU1234</div>
+        <div class="description">Short Description</div>
+        <div class="upc-text">0019200771-825</div>
+        <img src="./barcode.png" alt="Barcode" class="barcode" />
+        <div class="alt-code-box">
+          <div class="small-text">BCI: 12345</div>
+          <div class="small-text">IDS: 275689113124</div>
+          <div class="small-text">TV: 123456</div>
         </div>
+        <div class="vertical-line"></div>
         <img
           src="https://www.floridahardware.com/Resources/21140/thumbnail/22611046.jpg"
           alt="Product Image"
           class="product-image"
         />
-        <img src="./barcodes/897227002036.bmp" alt="Barcode" class="barcode" />
       </div>
     </div>
   </body>
