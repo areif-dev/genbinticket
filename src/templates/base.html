@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Printable Labels</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      .page {
+        width: 8.5in;
+        height: 11in;
+        padding: 13.5mm 4.54mm 10.3mm 4.54mm;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-content: flex-start;
+        box-sizing: border-box;
+        page-break-after: always;
+      }
+      .label {
+        position: relative;
+        width: 2.625in;
+        height: 1in;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border: 1px solid #000;
+        box-sizing: border-box;
+        font-family: "Cascadia Code", "Courier New", Courier, monospace;
+        overflow: hidden;
+        margin-bottom: 0.1mm;
+      }
+      .price {
+        position: absolute;
+        top: 0.033in;
+        left: 0.033in;
+        max-width: 1.26in;
+        max-height: 0.269in;
+        font-family: "Cascadia Code", "Courier New", Courier, monospace;
+        font-size: 0.267in;
+        font-weight: bold;
+        overflow: hidden;
+      }
+      .sku {
+        position: absolute;
+        top: 0.33in;
+        left: 0.033in;
+        max-width: 1.26in;
+        max-height: 0.134in;
+        font-family: "Cascadia Code", "Courier New", Courier, monospace;
+        font-size: 0.133in;
+        font-weight: bold;
+        overflow: hidden;
+      }
+      .description {
+        position: absolute;
+        top: 0.47in;
+        left: 0.033in;
+        max-width: 1.26in;
+        max-height: 0.118in;
+        font-family: "Cascadia Code", "Courier New", Courier, monospace;
+        font-size: 0.117in;
+        font-weight: bold;
+        overflow: hidden;
+      }
+      .ean13-text {
+        position: absolute;
+        top: 0.663in;
+        left: 0.033in;
+        max-width: 1.26in;
+        font-family: "Cascadia Code", "Courier New", Courier, monospace;
+        font-size: 0.083in;
+      }
+      .small-text {
+        font-family: "Cascadia Code", "Courier New", Courier, monospace;
+        font-size: 0.083in;
+      }
+      .alt-code-box {
+        position: absolute;
+        display: block;
+        top: 0.033in;
+        left: 1.3in;
+        max-height: 0.968in;
+        max-width: 0.697in;
+        overflow: hidden;
+      }
+      .barcode {
+        position: absolute;
+        top: 0.757in;
+        left: 0.033in;
+        height: 0.207in;
+        width: 0.73in;
+      }
+      .product-image {
+        position: absolute;
+        top: 0in;
+        left: 2in;
+        height: 1in;
+        max-width: 0.62in;
+        overflow: hidden;
+        object-fit: cover;
+      }
+    </style>
+  </head>
+  <body>
+    {% for page in pages %}
+      <div class="page">
+      {% for label in page %}
+        <div class="label">
+        <div class="price">{{ label.price | pretty_price }}</div>
+        <div class="sku">{{ label.sku }}</div>
+        <div class="description">{{ label.desc }}</div>
+        <div class="ean13-text">{{ label.ean13 | format_ean13 }}</div>
+        <img src="{{ label.ean13 | encode_barcode }}" alt="Error while encoding" class="barcode" />
+          <div class="alt-code-box">
+          {% for sku in label.alt_skus %}
+            <div class="small-text">{{ sku }}</div>
+          {% endfor %}
+          </div>
+          <img
+            src="{{ label.img }}"
+            alt="{{ label.desc }} Img"
+            class="product-image"
+          />
+        </div>
+        {% endfor %}
+      </div>
+    {% endfor %}
+  </body>
+</html>
