@@ -24,3 +24,8 @@ Might be easiest to just take this input as JSON
 - Default sort labels by this transformation of EAN13: `ean13[-3:] + ean13[:-3]`
   - This makes searching the labels more human readable because the last 3 digits of the EAN13 are usually the most significant
 - Have an option to perform no sorting and just print the labels in the order they were received 
+
+# TODO
+
+- [ ] Make a spot on the labels for the date they were printed 
+- [ ] Make a spot on the labels for the quantity last purchased
