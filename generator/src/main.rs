@@ -8,10 +8,8 @@ use std::{
 };
 
 use clap::Parser;
-use inventory_utils::Ean13;
+use generator::Label;
 use minijinja::context;
-use rust_decimal::Decimal;
-use serde::{Deserialize, Serialize};
 
 #[derive(Parser)]
 struct Cli {
@@ -43,16 +41,6 @@ impl Cli {
             }
         })
     }
-}
-
-#[derive(Debug, Deserialize, Clone, Serialize)]
-pub struct Label {
-    price: Decimal,
-    sku: String,
-    desc: String,
-    ean13: Ean13,
-    alt_skus: Vec<String>,
-    img: String,
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
