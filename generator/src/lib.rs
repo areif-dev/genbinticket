@@ -9,7 +9,7 @@ pub struct Label {
     desc: String,
     ean13: Ean13,
     alt_skus: Vec<String>,
-    img: String,
+    img: Option<String>,
 }
 
 impl Label {
@@ -50,7 +50,7 @@ impl LabelBuilder {
             desc: self.desc?,
             ean13: self.ean13?,
             alt_skus: self.alt_skus,
-            img: self.img?,
+            img: self.img,
         })
     }
 
