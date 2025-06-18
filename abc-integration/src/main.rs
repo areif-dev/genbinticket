@@ -1,5 +1,10 @@
 mod product;
 
+use std::{
+    io::Write,
+    process::{self, Stdio},
+};
+
 use clap::Parser;
 use generator::Label;
 
@@ -65,6 +70,7 @@ pub fn read_216(tabfile: &str) -> Result<Vec<String>, String> {
 fn main() -> Result<(), String> {
     let cli = Cli::parse();
     let skus = read_216(&cli.tabfile)?;
+    let mut img_cache = product::read_cached_imgs();
     let all_products = product::parse_abc_item_files(&cli.detail_file, &cli.posted_file)
         .or_else(|e| Err(format!("Cannot read ABC inventory export due to {}", e)))?;
     let (good_skus, failed_skus): (Vec<String>, Vec<String>) = skus
@@ -76,9 +82,48 @@ fn main() -> Result<(), String> {
             failed_skus
         );
     }
-    let labels: Vec<Label> = good_skus.into_iter().map(|sku| {
-        let product = all_products.get(&sku).unwrap();
-        Label::new().with_sku(&product.sku()).with_desc(&product.desc()).with_price(product.list())
-    })
+    let labels: Vec<Label> = good_skus
+        .into_iter()
+        .filter_map(|sku| {
+            let product = all_products.get(&sku).unwrap();
+            product.label(&mut img_cache)
+        })
+        .collect();
+
+    // Save the updated image cache for faster fetching next time
+    product::write_cached_imgs(&img_cache)
+        .or_else(|e| Err(format!("Can't save product image cache due to {}", e)))?;
+
+    let mut child = process::Command::new("./generator")
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .spawn()
+        .or_else(|e| Err(format!("Cannot spawn the generator process due to {}", e)))?;
+    if let Some(mut stdin) = child.stdin.take() {
+        let input_string = serde_json::to_string(&labels).or_else(|e| {
+            Err(format!(
+                "Can't pass labels to the label generator due to {}",
+                e
+            ))
+        })?;
+        writeln!(&mut stdin, "{}", input_string)
+            .or_else(|e| Err(format!("Cannot send label info to generator due to {}", e)))?;
+    }
+    let status = child.wait().or_else(|e| {
+        Err(format!(
+            "Label generator failed to execute because of {}",
+            e
+        ))
+    })?;
+    if !status.success() {
+        return Err(format!(
+            "Label generator failed. Here is a copy of its output {:?}",
+            child.stderr
+        ))?;
+    }
+    webbrowser::open("file://./out.html").or(Err(format!(
+        "Failed to open web browser. Please see the file out.html for your labels"
+    )))?;
     Ok(())
 }

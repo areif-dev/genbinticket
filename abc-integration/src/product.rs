@@ -1,6 +1,11 @@
+use generator::Label;
 use rust_decimal::Decimal;
-use serde::ser::Error;
-use std::{collections::HashMap, str::FromStr};
+use serde::{Deserialize, ser::Error};
+use std::{
+    collections::HashMap,
+    fs::{self, File},
+    str::FromStr,
+};
 
 use inventory_utils::Ean13;
 
@@ -10,6 +15,49 @@ fn price_from_str(price_str: &str) -> Result<Decimal, rust_decimal::Error> {
         .filter(|c| c.is_digit(10) || c == &'.')
         .collect();
     Decimal::from_str(&price_str)
+}
+
+#[derive(Deserialize)]
+struct FetchImgResp {
+    items: Vec<FetchImgItem>,
+}
+
+#[derive(Deserialize)]
+struct FetchImgItem {
+    ean: Ean13,
+    imgs: Vec<String>,
+}
+
+pub fn read_cached_imgs() -> HashMap<Ean13, String> {
+    let raw_text = fs::read_to_string("cached-imgs.json").unwrap_or(String::new());
+    serde_json::from_str(&raw_text).unwrap_or(HashMap::new())
+}
+
+pub fn write_cached_imgs(cache: &HashMap<Ean13, String>) -> Result<(), std::io::Error> {
+    let file = File::create("cached-imgs.json")?;
+    serde_json::to_writer(file, cache)?;
+    Ok(())
+}
+
+fn fetch_img(ean: Ean13, cache: &mut HashMap<Ean13, String>) -> Option<String> {
+    if let Some(url) = cache.get(&ean) {
+        return Some(url.to_string());
+    }
+
+    eprintln!("Fetching image for {}", ean.to_string());
+    let fetch_url = format!(
+        "https://api.upcitemdb.com/prod/trial/lookup?upc={}",
+        ean.to_upca_string()
+    );
+    let raw_response = reqwest::blocking::get(fetch_url).ok()?;
+    if !raw_response.status().is_success() {
+        return None;
+    }
+    let resp: FetchImgResp = serde_json::from_str(&raw_response.text().ok()?).ok()?;
+    let item = resp.items.get(0)?;
+    let img = item.imgs.get(0)?;
+    cache.insert(ean, img.to_string());
+    Some(img.to_string())
 }
 
 #[derive(Debug, Clone)]
@@ -54,6 +102,20 @@ impl AbcProduct {
 
     pub fn set_list(&mut self, new_list: Decimal) {
         self.list = new_list;
+    }
+
+    pub fn label(&self, cache: &mut HashMap<Ean13, String>) -> Option<Label> {
+        let upc = self.upcs().get(0)?.clone();
+        let label = match fetch_img(upc.clone(), cache) {
+            Some(i) => Label::new().with_img(&i),
+            None => Label::new(),
+        };
+        label
+            .with_sku(&self.sku())
+            .with_desc(&self.desc())
+            .with_price(self.list())
+            .with_ean13(upc)
+            .build()
     }
 }
 
