@@ -1,3 +1,5 @@
 /target
 out.html
 TabOutput.tsv
+*.data 
+cached-imgs.json
