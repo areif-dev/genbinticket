@@ -21,7 +21,7 @@ pub fn encode_barcode(code: &str) -> String {
         }
     };
     let barcode = if code.is_upca() {
-        match UPCA::new(&code.to_string()[1..]) {
+        match UPCA::new(&code.to_upca_string()) {
             Ok(b) => b,
             Err(_) => {
                 return "Error while encoding".to_string();

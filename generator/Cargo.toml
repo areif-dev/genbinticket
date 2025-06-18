@@ -8,7 +8,7 @@ barcoders = { version = "2.0.0", features = ["image"] }
 base64 = "0.22.1"
 clap = { version = "4.5.40", features = ["derive"] }
 image = "0.25.6"
-inventory-utils = { git = "https://github.com/areif-dev/inventory-utils", version = "0.3.1" }
+inventory-utils = { git = "https://github.com/areif-dev/inventory-utils", version = "0.3.2" }
 minijinja = "2.10.2"
 rust_decimal = "1.37.1"
 serde = { version = "1.0.219", features = ["derive"] }
