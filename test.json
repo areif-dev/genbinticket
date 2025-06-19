@@ -14,5 +14,8 @@
     "desc": "Fly Guard Mask",
     "alt_skus": ["Something", "Else", "Additional"],
     "img": "https://s7d5.scene7.com/is/image/PetsUnited/TE036165_01?wid=328&hei=328&fmt=webp&qlt=75,0&op_sharpen=0&resMode=sharp2&op_usm=0.9,1.0,6,0&iccEmbed=0"
+  },
+  {
+    "alt_skus": []
   }
 ]
