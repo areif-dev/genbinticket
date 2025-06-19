@@ -5,10 +5,11 @@ use barcoders::{
     sym::ean13::{EAN13 as barcodersEan13, UPCA},
 };
 use base64::{Engine, engine::general_purpose};
-use generator::Label;
 use inventory_utils::Ean13;
 use minijinja::context;
 use rust_decimal::Decimal;
+
+use crate::Label;
 
 pub fn pretty_price(val: &str) -> String {
     let decimal = Decimal::from_str(val).unwrap_or(Decimal::new(999999, 2));

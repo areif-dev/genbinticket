@@ -1,12 +1,9 @@
 mod product;
 
-use std::{
-    io::Write,
-    process::{self, Stdio},
-};
+use std::fs;
 
 use clap::Parser;
-use generator::Label;
+use generator::{Label, template_env};
 
 #[derive(Parser)]
 struct Cli {
@@ -82,6 +79,7 @@ fn main() -> Result<(), String> {
             failed_skus
         );
     }
+    eprintln!("Fetching images. This may take some time...");
     let labels: Vec<Label> = good_skus
         .into_iter()
         .filter_map(|sku| {
@@ -94,34 +92,12 @@ fn main() -> Result<(), String> {
     product::write_cached_imgs(&img_cache)
         .or_else(|e| Err(format!("Can't save product image cache due to {}", e)))?;
 
-    let mut child = process::Command::new("./generator")
-        .stdin(Stdio::piped())
-        .stdout(Stdio::piped())
-        .stderr(Stdio::piped())
-        .spawn()
-        .or_else(|e| Err(format!("Cannot spawn the generator process due to {}", e)))?;
-    if let Some(mut stdin) = child.stdin.take() {
-        let input_string = serde_json::to_string(&labels).or_else(|e| {
-            Err(format!(
-                "Can't pass labels to the label generator due to {}",
-                e
-            ))
-        })?;
-        writeln!(&mut stdin, "{}", input_string)
-            .or_else(|e| Err(format!("Cannot send label info to generator due to {}", e)))?;
-    }
-    let status = child.wait().or_else(|e| {
-        Err(format!(
-            "Label generator failed to execute because of {}",
-            e
-        ))
-    })?;
-    if !status.success() {
-        return Err(format!(
-            "Label generator failed. Here is a copy of its output {:?}",
-            child.stderr
-        ))?;
-    }
+    let env = template_env::setup_env()
+        .or_else(|e| Err(format!("Failed to configure label template due to {}", e)))?;
+    let render = template_env::render_template(&env, &labels)
+        .or_else(|e| Err(format!("Failed to render label template due to {}", e)))?;
+    fs::write("./out.html", render)
+        .or_else(|e| Err(format!("Cannot write template to save file due to {}", e)))?;
     webbrowser::open("file://./out.html").or(Err(format!(
         "Failed to open web browser. Please see the file out.html for your labels"
     )))?;

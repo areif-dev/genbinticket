@@ -5,6 +5,8 @@ use std::{
     collections::HashMap,
     fs::{self, File},
     str::FromStr,
+    thread::sleep,
+    time::Duration,
 };
 
 use inventory_utils::Ean13;
@@ -24,8 +26,7 @@ struct FetchImgResp {
 
 #[derive(Deserialize)]
 struct FetchImgItem {
-    ean: Ean13,
-    imgs: Vec<String>,
+    images: Vec<String>,
 }
 
 pub fn read_cached_imgs() -> HashMap<Ean13, String> {
@@ -44,7 +45,7 @@ fn fetch_img(ean: Ean13, cache: &mut HashMap<Ean13, String>) -> Option<String> {
         return Some(url.to_string());
     }
 
-    eprintln!("Fetching image for {}", ean.to_string());
+    sleep(Duration::from_millis(100)); // Add a rate limit for better citizenship
     let fetch_url = format!(
         "https://api.upcitemdb.com/prod/trial/lookup?upc={}",
         ean.to_upca_string()
@@ -53,9 +54,10 @@ fn fetch_img(ean: Ean13, cache: &mut HashMap<Ean13, String>) -> Option<String> {
     if !raw_response.status().is_success() {
         return None;
     }
-    let resp: FetchImgResp = serde_json::from_str(&raw_response.text().ok()?).ok()?;
+    let text = raw_response.text();
+    let resp: FetchImgResp = serde_json::from_str(&text.ok()?).ok()?;
     let item = resp.items.get(0)?;
-    let img = item.imgs.get(0)?;
+    let img = item.images.get(0)?;
     cache.insert(ean, img.to_string());
     Some(img.to_string())
 }

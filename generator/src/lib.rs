@@ -1,3 +1,5 @@
+pub mod template_env;
+
 use inventory_utils::Ean13;
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
