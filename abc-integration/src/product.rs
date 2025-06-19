@@ -65,6 +65,7 @@ fn fetch_img(ean: Ean13, cache: &mut HashMap<Ean13, String>) -> Option<String> {
 #[derive(Debug, Clone)]
 pub struct AbcProduct {
     sku: String,
+    alt_skus: Vec<String>,
     desc: String,
     upcs: Vec<Ean13>,
     list: Decimal,
@@ -108,10 +109,13 @@ impl AbcProduct {
 
     pub fn label(&self, cache: &mut HashMap<Ean13, String>) -> Option<Label> {
         let upc = self.upcs().get(0)?.clone();
-        let label = match fetch_img(upc.clone(), cache) {
+        let mut label = match fetch_img(upc.clone(), cache) {
             Some(i) => Label::new().with_img(&i),
             None => Label::new(),
         };
+        for sku in &self.alt_skus {
+            label.push_alt(sku);
+        }
         label
             .with_sku(&self.sku())
             .with_desc(&self.desc())
@@ -123,6 +127,7 @@ impl AbcProduct {
 
 pub struct AbcProductBuilder {
     sku: Option<String>,
+    alt_skus: Vec<String>,
     desc: Option<String>,
     upcs: Vec<Ean13>,
     list: Option<Decimal>,
@@ -135,6 +140,7 @@ impl AbcProductBuilder {
     pub fn new() -> Self {
         AbcProductBuilder {
             sku: None,
+            alt_skus: Vec::new(),
             desc: None,
             upcs: Vec::new(),
             list: None,
@@ -192,9 +198,14 @@ impl AbcProductBuilder {
         }
     }
 
+    pub fn push_alt(&mut self, sku: &str) {
+        self.alt_skus.push(sku.to_string());
+    }
+
     pub fn build(self) -> Option<AbcProduct> {
         Some(AbcProduct {
             sku: self.sku.clone()?,
+            alt_skus: self.alt_skus,
             desc: self.desc.clone()?,
             upcs: self.upcs,
             list: self.list?,
@@ -277,11 +288,18 @@ pub fn parse_abc_item_files(
             "Cannot parse a price in cents for cost in row {}",
             i
         ))))?;
+        let mut alt_skus = Vec::new();
+        for i in 40..43 {
+            if let Some(sku) = row.get(i) {
+                alt_skus.push(sku.to_string());
+            }
+        }
 
         products.insert(
             sku.clone(),
             AbcProduct {
                 sku,
+                alt_skus,
                 desc,
                 upcs,
                 list,
