@@ -719,6 +719,7 @@ version = "0.2.0"
 dependencies = [
  "barcoders",
  "base64",
+ "chrono",
  "clap",
  "image",
  "inventory-utils",

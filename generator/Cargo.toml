@@ -6,6 +6,7 @@ edition = "2024"
 [dependencies]
 barcoders = { version = "2.0.0", features = ["image"] }
 base64 = "0.22.1"
+chrono = "0.4.41"
 clap = { version = "4.5.40", features = ["derive"] }
 image = "0.25.6"
 inventory-utils = { git = "https://github.com/areif-dev/inventory-utils", version = "0.3.2" }

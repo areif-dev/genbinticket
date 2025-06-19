@@ -1,10 +1,36 @@
 pub mod template_env;
 
+use chrono::NaiveDate;
 use inventory_utils::Ean13;
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Debug, Clone)]
+pub struct CustomNaiveDate(chrono::NaiveDate);
+
+impl<'de> Deserialize<'de> for CustomNaiveDate {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = String::deserialize(deserializer)?;
+        Ok(CustomNaiveDate(
+            NaiveDate::parse_from_str(&s, "%Y-%m-%d").map_err(serde::de::Error::custom)?,
+        ))
+    }
+}
+
+impl Serialize for CustomNaiveDate {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        let s = self.0.format("%Y-%m-%d").to_string();
+        s.serialize(serializer)
+    }
+}
+
+#[derive(Debug, Deserialize, Clone, Serialize)]
 pub struct Label {
     price: Option<Decimal>,
     sku: Option<String>,
@@ -12,6 +38,7 @@ pub struct Label {
     ean13: Option<Ean13>,
     alt_skus: Vec<String>,
     img: Option<String>,
+    date: Option<CustomNaiveDate>,
 }
 
 impl Label {
@@ -23,6 +50,7 @@ impl Label {
             ean13: None,
             alt_skus: Vec::new(),
             img: None,
+            date: None,
         }
     }
 
@@ -57,6 +85,13 @@ impl Label {
     pub fn with_ean13(self, ean13: Ean13) -> Self {
         Label {
             ean13: Some(ean13),
+            ..self
+        }
+    }
+
+    pub fn with_date(self, date: CustomNaiveDate) -> Self {
+        Label {
+            date: Some(date),
             ..self
         }
     }
