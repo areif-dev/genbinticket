@@ -1,7 +1,6 @@
 mod template_env;
 
 use std::{
-    error::Error,
     fs,
     io::{BufRead, stdin},
     path::PathBuf,
@@ -9,7 +8,6 @@ use std::{
 
 use clap::Parser;
 use generator::Label;
-use minijinja::context;
 
 #[derive(Parser)]
 struct Cli {

@@ -110,11 +110,15 @@
       <div class="page">
       {% for label in page %}
         <div class="label">
-        <div class="price">{{ label.price | pretty_price }}</div>
-        <div class="sku">{{ label.sku }}</div>
-        <div class="description">{{ label.desc }}</div>
+        {% if label.price %}<div class="price">{{ label.price | pretty_price }}</div>{% endif %}
+        {% if label.sku %}<div class="sku">{{ label.sku }}</div>{% else %}<div class="sku">Missing SKU</div>{% endif %}
+        {% if label.desc %}<div class="description">{{ label.desc }}</div>{% else %}<div class="description">Missing Desc</div>{% endif %}
+        {% if label.ean13 %}
         <div class="ean13-text">{{ label.ean13 | format_ean13 }}</div>
         <img src="{{ label.ean13 | encode_barcode }}" alt="Error while encoding" class="barcode" />
+        {% else %}
+        <div class="ean13-text">Missing UPC</div>
+        {% endif %}
           <div class="alt-code-box">
           {% for sku in label.alt_skus %}
             <div class="small-text">{{ sku }}</div>
