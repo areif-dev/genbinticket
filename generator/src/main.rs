@@ -1,4 +1,4 @@
-mod filters;
+mod template_env;
 
 use std::{
     error::Error,
@@ -43,27 +43,20 @@ impl Cli {
     }
 }
 
-fn main() -> Result<(), Box<dyn Error>> {
-    let mut env = minijinja::Environment::new();
-    env.add_filter("pretty_price", filters::pretty_price);
-    env.add_filter("encode_barcode", filters::encode_barcode);
-    env.add_filter("format_ean13", filters::format_ean13);
-    env.add_template("base.html", include_str!("templates/base.html"))
-        .or_else(|e| Err(format!("Cannot load label template due to {}", e)))?;
-    let template = env
-        .get_template("base.html")
-        .or_else(|e| Err(format!("Cannot open label template due to {}", e)))?;
+fn main() -> Result<(), String> {
+    let env = template_env::setup_env().or_else(|e| {
+        Err(format!(
+            "Failed to configure the label templates due to {}",
+            e
+        ))
+    })?;
 
     let cli = Cli::parse();
     let raw_text = cli.read_input()?;
     let labels: Vec<Label> = serde_json::from_str(&raw_text)
         .or_else(|e| Err(format!("Cannot parse label data from input due to {}", e)))?;
-    let pages: Vec<Vec<Label>> = labels.chunks(30).map(|chunk| chunk.to_vec()).collect();
-    let render = template
-        .render(context! {
-            pages => pages,
-        })
-        .or_else(|e| Err(format!("Cannot render template due to {}", e)))?;
+    let render = template_env::render_template(&env, &labels)
+        .or_else(|e| Err(format!("Failed to render label template due to {}", e)))?;
     fs::write("out.html", render)
         .or_else(|e| Err(format!("Cannot write output html due to {}", e)))?;
     Ok(())

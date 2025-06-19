@@ -5,7 +5,9 @@ use barcoders::{
     sym::ean13::{EAN13 as barcodersEan13, UPCA},
 };
 use base64::{Engine, engine::general_purpose};
+use generator::Label;
 use inventory_utils::Ean13;
+use minijinja::context;
 use rust_decimal::Decimal;
 
 pub fn pretty_price(val: &str) -> String {
@@ -64,4 +66,24 @@ pub fn format_ean13(code: &str) -> String {
 
     let s = code.to_string();
     format!("{}-{}", &s[0..10], &s[10..13])
+}
+
+pub fn setup_env() -> Result<minijinja::Environment<'static>, minijinja::Error> {
+    let mut env = minijinja::Environment::new();
+    env.add_filter("pretty_price", pretty_price);
+    env.add_filter("encode_barcode", encode_barcode);
+    env.add_filter("format_ean13", format_ean13);
+    env.add_template("base.html", include_str!("templates/base.html"))?;
+    Ok(env)
+}
+
+pub fn render_template(
+    env: &minijinja::Environment,
+    labels: &[Label],
+) -> Result<String, minijinja::Error> {
+    let template = env.get_template("base.html")?;
+    let pages: Vec<Vec<Label>> = labels.chunks(30).map(|chunk| chunk.to_vec()).collect();
+    template.render(context! {
+        pages => pages,
+    })
 }
