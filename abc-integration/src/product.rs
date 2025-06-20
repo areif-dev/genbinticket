@@ -1,4 +1,5 @@
-use generator::Label;
+use chrono::{NaiveDate, Utc};
+use generator::{CustomNaiveDate, Label};
 use rust_decimal::Decimal;
 use serde::{Deserialize, ser::Error};
 use std::{
@@ -107,21 +108,26 @@ impl AbcProduct {
         self.list = new_list;
     }
 
-    pub fn label(&self, cache: &mut HashMap<Ean13, String>) -> Option<Label> {
+    pub fn label(&self, cache: &mut HashMap<Ean13, String>, qty: Option<u32>) -> Option<Label> {
         let upc = self.upcs().get(0)?.clone();
         let mut label = match fetch_img(upc.clone(), cache) {
             Some(i) => Label::new().with_img(&i),
             None => Label::new(),
         };
+        if let Some(q) = qty {
+            label = label.with_qty(q);
+        }
         for sku in &self.alt_skus {
             label.push_alt(sku);
         }
-        label
-            .with_sku(&self.sku())
-            .with_desc(&self.desc())
-            .with_price(self.list())
-            .with_ean13(upc)
-            .build()
+        Some(
+            label
+                .with_sku(&self.sku())
+                .with_desc(&self.desc())
+                .with_price(self.list())
+                .with_date(Utc::now().naive_local().date())
+                .with_ean13(upc),
+        )
     }
 }
 

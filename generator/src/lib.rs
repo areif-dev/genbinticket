@@ -8,6 +8,16 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone)]
 pub struct CustomNaiveDate(chrono::NaiveDate);
 
+impl CustomNaiveDate {
+    pub fn parse_from_str(s: &str, fmt: &str) -> Result<CustomNaiveDate, chrono::ParseError> {
+        Ok(CustomNaiveDate(NaiveDate::parse_from_str(s, fmt)?))
+    }
+
+    pub fn new(d: NaiveDate) -> Self {
+        CustomNaiveDate(d)
+    }
+}
+
 impl<'de> Deserialize<'de> for CustomNaiveDate {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
@@ -98,9 +108,9 @@ impl Label {
         }
     }
 
-    pub fn with_date(self, date: CustomNaiveDate) -> Self {
+    pub fn with_date(self, date: NaiveDate) -> Self {
         Label {
-            date: Some(date),
+            date: Some(CustomNaiveDate(date)),
             ..self
         }
     }

@@ -32,7 +32,7 @@ struct Cli {
     posted_file: String,
 }
 
-pub fn read_216(tabfile: &str) -> Result<Vec<String>, String> {
+pub fn read_216(tabfile: &str) -> Result<Vec<(String, Option<u32>)>, String> {
     let mut rdr = csv::ReaderBuilder::new()
         .delimiter(b'\t')
         .flexible(true)
@@ -40,7 +40,7 @@ pub fn read_216(tabfile: &str) -> Result<Vec<String>, String> {
         .from_path(tabfile)
         .or_else(|e| Err(format!("Can't open {} due to {}", tabfile, e)))?;
 
-    let mut skus = Vec::new();
+    let mut skus_qtys = Vec::new();
     for (i, result) in rdr.records().skip(2).enumerate() {
         // ABC 2-16 report splits bills at every 100 items and inserts a new header. Always skip
         // that header
@@ -59,20 +59,26 @@ pub fn read_216(tabfile: &str) -> Result<Vec<String>, String> {
         if sku == "" {
             continue;
         }
-        skus.push(sku.to_string());
+        let qty: Option<u32> = match record.get(6) {
+            Some(s) => s.parse().ok(),
+            None => None,
+        };
+
+        skus_qtys.push((sku.to_string(), qty));
     }
-    Ok(skus)
+    Ok(skus_qtys)
 }
 
 fn main() -> Result<(), String> {
     let cli = Cli::parse();
-    let skus = read_216(&cli.tabfile)?;
+    let skus_qtys = read_216(&cli.tabfile)?;
     let mut img_cache = product::read_cached_imgs();
     let all_products = product::parse_abc_item_files(&cli.detail_file, &cli.posted_file)
         .or_else(|e| Err(format!("Cannot read ABC inventory export due to {}", e)))?;
-    let (good_skus, failed_skus): (Vec<String>, Vec<String>) = skus
-        .into_iter()
-        .partition(|sku| all_products.contains_key(sku));
+    let (good_skus, failed_skus): (Vec<(String, Option<u32>)>, Vec<(String, Option<u32>)>) =
+        skus_qtys
+            .into_iter()
+            .partition(|(sku, _)| all_products.contains_key(sku));
     if failed_skus.len() > 0 {
         eprintln!(
             "The following skus were not found in the ABC Inventory Export: {:?}",
@@ -82,9 +88,9 @@ fn main() -> Result<(), String> {
     eprintln!("Fetching images. This may take some time...");
     let labels: Vec<Label> = good_skus
         .into_iter()
-        .filter_map(|sku| {
+        .filter_map(|(sku, qty)| {
             let product = all_products.get(&sku).unwrap();
-            product.label(&mut img_cache)
+            product.label(&mut img_cache, qty)
         })
         .collect();
 
