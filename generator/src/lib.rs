@@ -39,6 +39,7 @@ pub struct Label {
     alt_skus: Vec<String>,
     img: Option<String>,
     date: Option<CustomNaiveDate>,
+    qty: Option<u32>,
 }
 
 impl Label {
@@ -51,6 +52,14 @@ impl Label {
             alt_skus: Vec::new(),
             img: None,
             date: None,
+            qty: None,
+        }
+    }
+
+    pub fn with_qty(self, qty: u32) -> Self {
+        Label {
+            qty: Some(qty),
+            ..self
         }
     }
 

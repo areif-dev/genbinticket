@@ -5,7 +5,9 @@
     "ean13": "0019200771825",
     "desc": "1700 1705 1740 F/1687 FORNEY INDUSTRIES OXY REG",
     "alt_skus": ["Something", "Else", "Additional"],
-    "img": "https://www.floridahardware.com/Resources/21140/thumbnail/22611046.jpg"
+    "img": "https://www.floridahardware.com/Resources/21140/thumbnail/22611046.jpg",
+    "date": "2025-06-19",
+    "qty": 1000
   },
   {
     "price": 30.00,
@@ -13,7 +15,8 @@
     "ean13": "5051771751108",
     "desc": "Fly Guard Mask",
     "alt_skus": ["Something", "Else", "Additional"],
-    "img": "https://s7d5.scene7.com/is/image/PetsUnited/TE036165_01?wid=328&hei=328&fmt=webp&qlt=75,0&op_sharpen=0&resMode=sharp2&op_usm=0.9,1.0,6,0&iccEmbed=0"
+    "img": "https://s7d5.scene7.com/is/image/PetsUnited/TE036165_01?wid=328&hei=328&fmt=webp&qlt=75,0&op_sharpen=0&resMode=sharp2&op_usm=0.9,1.0,6,0&iccEmbed=0",
+    "qty": 1
   },
   {
     "alt_skus": []

@@ -74,6 +74,22 @@
         font-family: "Cascadia Code", "Courier New", Courier, monospace;
         font-size: 0.083in;
       }
+      .date {
+        position: absolute;
+        top: 0.885in;
+        left: 0.81in;
+        font-family: "Cascadia Code", "Courier New", Courier, monospace;
+        font-size: 0.083in;
+        max-width: 0.5in;
+      }
+      .qty {
+        position: absolute;
+        top: 0.885in;
+        left: 1.5in;
+        font-family: "Cascadia Code", "Courier New", Courier, monospace;
+        font-size: 0.083in;
+        max-width: 0.6in;
+      }
       .small-text {
         font-family: "Cascadia Code", "Courier New", Courier, monospace;
         font-size: 0.083in;
@@ -110,16 +126,35 @@
       <div class="page">
       {% for label in page %}
         <div class="label">
-        {% if label.price %}<div class="price">{{ label.price | pretty_price }}</div>{% endif %}
-        {% if label.sku %}<div class="sku">{{ label.sku }}</div>{% else %}<div class="sku">Missing SKU</div>{% endif %}
-        {% if label.desc %}<div class="description">{{ label.desc }}</div>{% else %}<div class="description">Missing Desc</div>{% endif %}
+        {% if label.price %}
+        <div class="price">{{ label.price | pretty_price }}</div>
+        {% endif %}
+        {% if label.sku %}
+        <div class="sku">{{ label.sku }}</div>{% else %}<div class="sku">Missing SKU</div>
+        {% endif %}
+        {% if label.desc %}
+        <div class="description">{{ label.desc }}</div>
+        {% else %}
+        <div class="description">Missing Desc</div>
+        {% endif %}
         {% if label.ean13 %}
         <div class="ean13-text">{{ label.ean13 | format_ean13 }}</div>
         <img src="{{ label.ean13 | encode_barcode }}" alt="Error while encoding" class="barcode" />
         {% else %}
         <div class="ean13-text">Missing UPC</div>
         {% endif %}
-          <div class="alt-code-box">
+        {% if label.date %}
+        <div class="date">{{ label.date }}</div>
+        {% endif %}
+        <div class="qty">
+          Qty:&nbsp;
+          {% if label.qty %}
+          {{ label.qty }}
+          {% else %}
+          N/A
+          {% endif %}
+        </div>
+        <div class="alt-code-box">
           {% for sku in label.alt_skus %}
             <div class="small-text">{{ sku }}</div>
           {% endfor %}
