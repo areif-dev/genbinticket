@@ -27,5 +27,6 @@ Might be easiest to just take this input as JSON
 
 # TODO
 
-- [ ] Make a spot on the labels for the date they were printed 
-- [ ] Make a spot on the labels for the quantity last purchased
+- [x] Make a spot on the labels for the date they were printed 
+- [x] Make a spot on the labels for the quantity last purchased
+- [ ] Add sorting functionality
