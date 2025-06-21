@@ -31,4 +31,5 @@ Might be easiest to just take this input as JSON
 - [x] Make a spot on the labels for the quantity last purchased
 - [ ] If multiple upcs exist for a product, take the last one because that is most likely to be the most up to date
 - [x] Add sorting functionality
-- [ ] Fix ean13 to_upca_string functionality
+- [x] Fix ean13 to_upca_string functionality
+- [x] If multiple upcs exist for a product, take the last one because that is most likely to be the most up to date
