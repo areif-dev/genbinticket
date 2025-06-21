@@ -30,3 +30,4 @@ Might be easiest to just take this input as JSON
 - [x] Make a spot on the labels for the date they were printed 
 - [x] Make a spot on the labels for the quantity last purchased
 - [ ] Add sorting functionality
+- [ ] If multiple upcs exist for a product, take the last one because that is most likely to be the most up to date
