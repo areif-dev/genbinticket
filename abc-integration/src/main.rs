@@ -1,9 +1,18 @@
 mod product;
 
-use std::fs;
+use clap::ValueEnum;
+use std::{cmp::Ordering, env::current_dir, fs, path::PathBuf};
 
 use clap::Parser;
 use generator::{Label, template_env};
+
+#[derive(Clone, ValueEnum)]
+enum SortOption {
+    Upc,
+    Sku,
+    Date,
+    Preserve,
+}
 
 #[derive(Parser)]
 struct Cli {
@@ -19,7 +28,7 @@ struct Cli {
     #[arg(
         short,
         long,
-        default_value = "C:\\ABC Software\\Database Export\\Company001\\Data\\item_detail.data"
+        default_value = "C:\\ABC Software\\Database Export\\Company001\\Data\\item.data"
     )]
     detail_file: String,
 
@@ -30,6 +39,9 @@ struct Cli {
         default_value = "C:\\ABC Software\\Database Export\\Company001\\Data\\item_posted.data"
     )]
     posted_file: String,
+
+    #[arg(short, long, default_value = "preserve")]
+    sort: SortOption,
 }
 
 pub fn read_216(tabfile: &str) -> Result<Vec<(String, Option<u32>)>, String> {
@@ -69,6 +81,47 @@ pub fn read_216(tabfile: &str) -> Result<Vec<(String, Option<u32>)>, String> {
     Ok(skus_qtys)
 }
 
+fn sort_labels(labels: &mut [Label], sort_option: SortOption) {
+    match sort_option {
+        SortOption::Upc => labels.sort_by(|a, b| {
+            let a = match a.ean13() {
+                Some(e) => e.to_string(),
+                None => return Ordering::Less,
+            };
+            let b = match b.ean13() {
+                Some(e) => e.to_string(),
+                None => return Ordering::Greater,
+            };
+            let trans_a = format!("{}{}", &a[10..], &a[..11]);
+            let trans_b = format!("{}{}", &b[10..], &b[..11]);
+            trans_a.cmp(&trans_b)
+        }),
+        SortOption::Sku => labels.sort_by(|a, b| {
+            let a = match a.sku() {
+                Some(s) => s,
+                None => return Ordering::Less,
+            };
+            let b = match b.sku() {
+                Some(s) => s,
+                None => return Ordering::Greater,
+            };
+            a.cmp(&b)
+        }),
+        SortOption::Date => labels.sort_by(|a, b| {
+            let a = match a.date() {
+                Some(d) => d,
+                None => return Ordering::Less,
+            };
+            let b = match b.date() {
+                Some(d) => d,
+                None => return Ordering::Greater,
+            };
+            a.cmp(&b)
+        }),
+        SortOption::Preserve => (),
+    }
+}
+
 fn main() -> Result<(), String> {
     let cli = Cli::parse();
     let skus_qtys = read_216(&cli.tabfile)?;
@@ -86,13 +139,14 @@ fn main() -> Result<(), String> {
         );
     }
     eprintln!("Fetching images. This may take some time...");
-    let labels: Vec<Label> = good_skus
+    let mut labels: Vec<Label> = good_skus
         .into_iter()
         .filter_map(|(sku, qty)| {
             let product = all_products.get(&sku).unwrap();
             product.label(&mut img_cache, qty)
         })
         .collect();
+    sort_labels(&mut labels, cli.sort);
 
     // Save the updated image cache for faster fetching next time
     product::write_cached_imgs(&img_cache)
@@ -104,7 +158,14 @@ fn main() -> Result<(), String> {
         .or_else(|e| Err(format!("Failed to render label template due to {}", e)))?;
     fs::write("./out.html", render)
         .or_else(|e| Err(format!("Cannot write template to save file due to {}", e)))?;
-    webbrowser::open("file://./out.html").or(Err(format!(
+    let mut file = current_dir().or_else(|e| {
+        Err(format!(
+            "Failed to get path to working directory due to {}",
+            e
+        ))
+    })?;
+    file.push("out.html");
+    webbrowser::open(&format!("file://{}", file.display())).or(Err(format!(
         "Failed to open web browser. Please see the file out.html for your labels"
     )))?;
     Ok(())

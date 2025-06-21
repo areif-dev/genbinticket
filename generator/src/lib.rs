@@ -5,7 +5,7 @@ use inventory_utils::Ean13;
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub struct CustomNaiveDate(chrono::NaiveDate);
 
 impl CustomNaiveDate {
@@ -64,6 +64,38 @@ impl Label {
             date: None,
             qty: None,
         }
+    }
+
+    pub fn price(&self) -> Option<Decimal> {
+        self.price.clone()
+    }
+
+    pub fn sku(&self) -> Option<String> {
+        self.sku.clone()
+    }
+
+    pub fn desc(&self) -> Option<String> {
+        self.desc.clone()
+    }
+
+    pub fn ean13(&self) -> Option<Ean13> {
+        self.ean13.clone()
+    }
+
+    pub fn alt_skus(&self) -> Vec<String> {
+        self.alt_skus.clone()
+    }
+
+    pub fn img(&self) -> Option<String> {
+        self.img.clone()
+    }
+
+    pub fn date(&self) -> Option<CustomNaiveDate> {
+        self.date.clone()
+    }
+
+    pub fn qty(&self) -> Option<u32> {
+        self.qty
     }
 
     pub fn with_qty(self, qty: u32) -> Self {
