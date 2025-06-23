@@ -109,7 +109,7 @@ impl AbcProduct {
     }
 
     pub fn label(&self, cache: &mut HashMap<Ean13, String>, qty: Option<u32>) -> Option<Label> {
-        let upc = self.upcs().get(0)?.clone();
+        let upc = self.upcs().last()?.clone();
         let mut label = match fetch_img(upc.clone(), cache) {
             Some(i) => Label::new().with_img(&i),
             None => Label::new(),
