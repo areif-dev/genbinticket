@@ -34,4 +34,6 @@ Might be easiest to just take this input as JSON
 - [x] Fix ean13 to_upca_string functionality
 - [x] If multiple upcs exist for a product, take the last one because that is most likely to be the most up to date
 - [ ] Add harnesses to fetch product info from vendors 
-- [ ] Prompt the user for sorting options by default
+- [x] Prompt the user for sorting options by default
+- [ ] Add javascript to page to handle sorting options
+- [ ] Add ability to rearrange labels manually 
