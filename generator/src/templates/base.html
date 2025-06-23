@@ -120,8 +120,8 @@
       }
     </style>
     <style media="screen">
-      #sort-btn {
-        display: block;
+      .sort-btn {
+        display: inline;
       }
     </style>
     <style media="print">
@@ -129,13 +129,25 @@
         margin: 0;
       }
 
-      #sort-btn {
+      .sort-btn {
+        display: none;
+      }
+
+      label {
         display: none;
       }
     </style>
   </head>
   <body>
-    <button id="sort-btn">Sort</button>
+    <label for="sort-group">Sort:</label>
+    <input type="radio" class="sort-btn" id="sort-preserve" name="sort" value="preserve" checked />
+    <label for="sort-preserve">Preserve</label>
+    <input type="radio" class="sort-btn" id="sort-upc" name="sort" value="upc" />
+    <label for="sort-upc">UPC</label>
+    <input type="radio" class="sort-btn" id="sort-sku" name="sort" value="sku" />
+    <label for="sort-sku">SKU</label>
+    <input type="radio" class="sort-btn" id="sort-date" name="sort" value="date" />
+    <label for="sort-date">Date</label>
     {% for page in pages %}
       <div class="page">
       {% for label in page %}
