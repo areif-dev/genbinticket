@@ -119,8 +119,23 @@
         object-fit: cover;
       }
     </style>
+    <style media="screen">
+      #sort-btn {
+        display: block;
+      }
+    </style>
+    <style media="print">
+      @page {
+        margin: 0;
+      }
+
+      #sort-btn {
+        display: none;
+      }
+    </style>
   </head>
   <body>
+    <button id="sort-btn">Sort</button>
     {% for page in pages %}
       <div class="page">
       {% for label in page %}
