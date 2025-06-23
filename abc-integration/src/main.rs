@@ -1,7 +1,13 @@
 mod product;
 
 use clap::ValueEnum;
-use std::{cmp::Ordering, env::current_dir, fs, path::PathBuf};
+use std::{
+    cmp::Ordering,
+    env::current_dir,
+    fs,
+    io::{self, Write, stdin, stdout},
+    path::PathBuf,
+};
 
 use clap::Parser;
 use generator::{Label, template_env};
@@ -12,6 +18,22 @@ enum SortOption {
     Sku,
     Date,
     Preserve,
+}
+
+impl SortOption {
+    pub fn prompt() -> Result<Self, io::Error> {
+        let raw = input("Sort option: [preserve] ")?;
+        match raw.trim().to_lowercase().as_ref() {
+            "preserve" | "" => return Ok(Self::Preserve),
+            "upc" => return Ok(Self::Upc),
+            "sku" => return Ok(Self::Sku),
+            "date" => return Ok(Self::Date),
+            _ => {
+                println!("Options are preserve, upc, sku, date");
+                return Self::prompt();
+            }
+        }
+    }
 }
 
 #[derive(Parser)]
@@ -40,8 +62,16 @@ struct Cli {
     )]
     posted_file: String,
 
-    #[arg(short, long, default_value = "preserve")]
-    sort: SortOption,
+    #[arg(short, long)]
+    sort: Option<SortOption>,
+}
+
+fn input(msg: &str) -> Result<String, io::Error> {
+    let mut buf = String::new();
+    print!("{}", msg);
+    stdout().flush()?;
+    stdin().read_line(&mut buf)?;
+    Ok(buf)
 }
 
 pub fn read_216(tabfile: &str) -> Result<Vec<(String, Option<u32>)>, String> {
@@ -124,6 +154,15 @@ fn sort_labels(labels: &mut [Label], sort_option: SortOption) {
 
 fn main() -> Result<(), String> {
     let cli = Cli::parse();
+    let sort = match cli.sort {
+        None => SortOption::prompt().or_else(|e| {
+            Err(format!(
+                "Failed to read user input for sorting option due to {}",
+                e
+            ))
+        })?,
+        Some(o) => o,
+    };
     let skus_qtys = read_216(&cli.tabfile)?;
     let mut img_cache = product::read_cached_imgs();
     let all_products = product::parse_abc_item_files(&cli.detail_file, &cli.posted_file)
@@ -146,7 +185,8 @@ fn main() -> Result<(), String> {
             product.label(&mut img_cache, qty)
         })
         .collect();
-    sort_labels(&mut labels, cli.sort);
+
+    sort_labels(&mut labels, sort);
 
     // Save the updated image cache for faster fetching next time
     product::write_cached_imgs(&img_cache)
