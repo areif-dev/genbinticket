@@ -126,21 +126,8 @@ async fn main() -> Result<(), String> {
     product::write_cached_imgs(&img_cache)
         .or_else(|e| Err(format!("Can't save product image cache due to {}", e)))?;
 
-    let env = template_env::setup_env()
-        .or_else(|e| Err(format!("Failed to configure label template due to {}", e)))?;
-    let render = template_env::render_template(&env, &labels)
-        .or_else(|e| Err(format!("Failed to render label template due to {}", e)))?;
-    fs::write("./out.html", render)
-        .or_else(|e| Err(format!("Cannot write template to save file due to {}", e)))?;
-    let mut file = current_dir().or_else(|e| {
-        Err(format!(
-            "Failed to get path to working directory due to {}",
-            e
-        ))
-    })?;
-    file.push("out.html");
-    webbrowser::open(&format!("file://{}", file.display())).or(Err(format!(
-        "Failed to open web browser. Please see the file out.html for your labels"
-    )))?;
+    start_server(labels)
+        .await
+        .or_else(|e| Err(format!("Failed to start server due to {}", e)))?;
     Ok(())
 }

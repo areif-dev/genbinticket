@@ -59,13 +59,36 @@ fn sort_labels(labels: &mut [Label], sort_option: SortOption) {
     }
 }
 
-pub async fn start_server() -> Result<(), io::Error> {
+#[derive(Deserialize)]
+struct RootQuery {
+    sort: Option<SortOption>,
+}
+
+async fn root(
+    State(state): State<Arc<AppState>>,
+    Query(query): Query<RootQuery>,
+) -> Result<Html<String>, (StatusCode, String)> {
+    let mut labels = state.labels.clone();
+    sort_labels(&mut labels, query.sort.unwrap_or(SortOption::Preserve));
+    Ok(Html::from(
+        render_template(&state.template_env, &labels)
+            .or_else(|e| Err((StatusCode::INTERNAL_SERVER_ERROR, format!("{}", e))))?,
+    ))
+}
+
+pub async fn start_server(labels: Vec<Label>) -> Result<(), io::Error> {
     let env =
         template_env::setup_env().or_else(|e| Err(io::Error::new(io::ErrorKind::Other, e)))?;
-    let shared_state = Arc::new(env);
+    let shared_state = Arc::new(AppState {
+        template_env: env,
+        labels,
+    });
+
     let app = Router::new().route("/", get(root)).with_state(shared_state);
-    let listener = tokio::net::TcpListener::bind(("127.0.0.1", 0)).await?;
-    let port = listener.local_addr()?.port();
+    let listener = tokio::net::TcpListener::bind(("127.0.1.0", 0)).await?;
+    let addr = listener.local_addr()?;
+    eprintln!("Starting server on address {}", addr);
+    webbrowser::open(&format!("http://localhost:{}", addr.port()))?;
     axum::serve(listener, app).await?;
     Ok(())
 }
