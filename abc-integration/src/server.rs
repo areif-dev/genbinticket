@@ -2,7 +2,7 @@ use clap::ValueEnum;
 use std::{cmp::Ordering, io, sync::Arc};
 
 use axum::{
-    Json, Router,
+    Router,
     extract::{Query, State},
     response::Html,
     routing::get,

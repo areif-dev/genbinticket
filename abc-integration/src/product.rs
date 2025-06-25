@@ -70,7 +70,6 @@ pub struct AbcProduct {
     desc: String,
     upcs: Vec<Ean13>,
     list: Decimal,
-    cost: Decimal,
     stock: f64,
     last_sold: Option<chrono::NaiveDate>,
 }
@@ -90,22 +89,6 @@ impl AbcProduct {
 
     pub fn list(&self) -> Decimal {
         self.list
-    }
-
-    pub fn cost(&self) -> Decimal {
-        self.cost
-    }
-
-    pub fn stock(&self) -> f64 {
-        self.stock
-    }
-
-    pub fn last_sold(&self) -> Option<chrono::NaiveDate> {
-        self.last_sold
-    }
-
-    pub fn set_list(&mut self, new_list: Decimal) {
-        self.list = new_list;
     }
 
     pub async fn label(
@@ -132,97 +115,6 @@ impl AbcProduct {
                 .with_date(Utc::now().naive_local().date())
                 .with_ean13(upc),
         )
-    }
-}
-
-pub struct AbcProductBuilder {
-    sku: Option<String>,
-    alt_skus: Vec<String>,
-    desc: Option<String>,
-    upcs: Vec<Ean13>,
-    list: Option<Decimal>,
-    cost: Option<Decimal>,
-    stock: Option<f64>,
-    last_sold: Option<chrono::NaiveDate>,
-}
-
-impl AbcProductBuilder {
-    pub fn new() -> Self {
-        AbcProductBuilder {
-            sku: None,
-            alt_skus: Vec::new(),
-            desc: None,
-            upcs: Vec::new(),
-            list: None,
-            cost: None,
-            stock: None,
-            last_sold: None,
-        }
-    }
-
-    pub fn with_sku(self, sku: &str) -> Self {
-        AbcProductBuilder {
-            sku: Some(sku.to_string()),
-            ..self
-        }
-    }
-
-    pub fn with_desc(self, desc: &str) -> Self {
-        AbcProductBuilder {
-            desc: Some(desc.to_string()),
-            ..self
-        }
-    }
-
-    pub fn with_upcs(self, upcs: Vec<Ean13>) -> Self {
-        AbcProductBuilder { upcs, ..self }
-    }
-
-    pub fn add_upc(self, upc: Ean13) -> Self {
-        let mut new_upcs = self.upcs.to_vec();
-        new_upcs.push(upc);
-        AbcProductBuilder {
-            upcs: new_upcs,
-            ..self
-        }
-    }
-
-    pub fn with_list(self, list: Decimal) -> Self {
-        AbcProductBuilder {
-            list: Some(list),
-            ..self
-        }
-    }
-
-    pub fn with_cost(self, cost: Decimal) -> Self {
-        AbcProductBuilder {
-            cost: Some(cost),
-            ..self
-        }
-    }
-
-    pub fn with_stock(self, stock: f64) -> Self {
-        AbcProductBuilder {
-            stock: Some(stock),
-            ..self
-        }
-    }
-
-    pub fn push_alt(&mut self, sku: &str) {
-        self.alt_skus.push(sku.to_string());
-    }
-
-    pub fn build(self) -> Option<AbcProduct> {
-        Some(AbcProduct {
-            sku: self.sku.clone()?,
-            alt_skus: self.alt_skus,
-            desc: self.desc.clone()?,
-            upcs: self.upcs,
-            list: self.list?,
-            cost: self.cost?,
-            stock: self.stock?,
-            last_sold: self.last_sold,
-        })
     }
 }
 
@@ -290,14 +182,6 @@ pub fn parse_abc_item_files(
             "Cannot parse a price in cents for list in row {}",
             i
         ))))?;
-        let cost = row.get(8).ok_or(csv::Error::custom(format!(
-            "Cannot fetch cost from row {}",
-            i
-        )))?;
-        let cost = price_from_str(cost).or(Err(csv::Error::custom(format!(
-            "Cannot parse a price in cents for cost in row {}",
-            i
-        ))))?;
         let mut alt_skus = Vec::new();
         for i in 40..43 {
             if let Some(sku) = row.get(i) {
@@ -313,7 +197,6 @@ pub fn parse_abc_item_files(
                 desc,
                 upcs,
                 list,
-                cost,
                 stock: 0.0,
                 last_sold: None,
             },

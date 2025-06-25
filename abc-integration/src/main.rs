@@ -3,13 +3,8 @@ mod server;
 
 use inventory_utils::Ean13;
 use product::AbcProduct;
-use serde::Deserialize;
 use server::start_server;
-use std::{
-    cmp::Ordering,
-    collections::HashMap,
-    io::{self, Write, stdin, stdout},
-};
+use std::collections::HashMap;
 
 use clap::Parser;
 use generator::{Label, template_env};
@@ -39,14 +34,6 @@ struct Cli {
         default_value = "C:\\ABC Software\\Database Export\\Company001\\Data\\item_posted.data"
     )]
     posted_file: String,
-}
-
-fn input(msg: &str) -> Result<String, io::Error> {
-    let mut buf = String::new();
-    print!("{}", msg);
-    stdout().flush()?;
-    stdin().read_line(&mut buf)?;
-    Ok(buf)
 }
 
 pub fn read_216(tabfile: &str) -> Result<Vec<(String, Option<u32>)>, String> {
