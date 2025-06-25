@@ -9,6 +9,8 @@ use inventory_utils::Ean13;
 use minijinja::context;
 use rust_decimal::Decimal;
 
+pub use minijinja::Environment as TemplateEnvironment;
+
 use crate::Label;
 
 pub fn pretty_price(val: &str) -> String {
@@ -69,7 +71,7 @@ pub fn format_ean13(code: &str) -> String {
     format!("{}-{}", &s[0..10], &s[10..13])
 }
 
-pub fn setup_env() -> Result<minijinja::Environment<'static>, minijinja::Error> {
+pub fn setup_env() -> Result<TemplateEnvironment<'static>, minijinja::Error> {
     let mut env = minijinja::Environment::new();
     env.add_filter("pretty_price", pretty_price);
     env.add_filter("encode_barcode", encode_barcode);
