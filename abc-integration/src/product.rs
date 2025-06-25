@@ -41,7 +41,7 @@ pub fn write_cached_imgs(cache: &HashMap<Ean13, String>) -> Result<(), std::io::
     Ok(())
 }
 
-fn fetch_img(ean: Ean13, cache: &mut HashMap<Ean13, String>) -> Option<String> {
+async fn fetch_img(ean: Ean13, cache: &mut HashMap<Ean13, String>) -> Option<String> {
     if let Some(url) = cache.get(&ean) {
         return Some(url.to_string());
     }
@@ -51,12 +51,12 @@ fn fetch_img(ean: Ean13, cache: &mut HashMap<Ean13, String>) -> Option<String> {
         "https://api.upcitemdb.com/prod/trial/lookup?upc={}",
         ean.to_upca_string()
     );
-    let raw_response = reqwest::blocking::get(fetch_url).ok()?;
+    let raw_response = reqwest::get(fetch_url).await.ok()?;
     if !raw_response.status().is_success() {
         return None;
     }
     let text = raw_response.text();
-    let resp: FetchImgResp = serde_json::from_str(&text.ok()?).ok()?;
+    let resp: FetchImgResp = serde_json::from_str(&text.await.ok()?).ok()?;
     let item = resp.items.get(0)?;
     let img = item.images.get(0)?;
     cache.insert(ean, img.to_string());
@@ -108,9 +108,13 @@ impl AbcProduct {
         self.list = new_list;
     }
 
-    pub fn label(&self, cache: &mut HashMap<Ean13, String>, qty: Option<u32>) -> Option<Label> {
+    pub async fn label(
+        &self,
+        cache: &mut HashMap<Ean13, String>,
+        qty: Option<u32>,
+    ) -> Option<Label> {
         let upc = self.upcs().last()?.clone();
-        let mut label = match fetch_img(upc.clone(), cache) {
+        let mut label = match fetch_img(upc.clone(), cache).await {
             Some(i) => Label::new().with_img(&i),
             None => Label::new(),
         };
