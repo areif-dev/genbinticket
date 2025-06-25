@@ -140,143 +140,55 @@
   </head>
   <body>
     <label for="sort-group">Sort:</label>
-    <input type="radio" class="sort-btn" id="sort-preserve" name="sort" value="preserve" checked />
-    <label for="sort-preserve">Preserve</label>
-    <input type="radio" class="sort-btn" id="sort-upc" name="sort" value="upc" />
-    <label for="sort-upc">UPC</label>
-    <input type="radio" class="sort-btn" id="sort-sku" name="sort" value="sku" />
-    <label for="sort-sku">SKU</label>
-    <input type="radio" class="sort-btn" id="sort-date" name="sort" value="date" />
-    <label for="sort-date">Date</label>
-    <section id="pages"></section>
-  </body>
-  <script>
-    function e(name, attrs, children) {
-      let elem = document.createElement(name);
-      for (const attr in attrs) {
-        if (attrs.hasOwnProperty(attr)) {
-          elem.setAttribute(attr, attrs[attr]);
-        }
-      };
-      console.log("Elem");
-      console.log(elem);
-      if (children) {
-        children.forEach((child) => {
-          console.log(child);
-          if (typeof child === "string") {
-            const textNode = document.createTextNode(child + "");
-            elem.appendChild(textNode);
-          } else {
-            elem.appendChild(child);
-          }
-        });
-      }
-      return elem;
-    }
-
-    window.addEventListener("load", () => {
-      let defaultOrder = [
-        {% for page in pages %} 
-          [
-            {% for label in page %}
-              {
-              {% if label.sku %}
-                sku: "{{ label.sku }}",
-              {% endif %}
-              {% if label.ean13 %}
-                "ean13-text": "{{ label.ean13 | format_ean13 }}",
-                barcode: "{{ label.ean13 | encode_barcode }}",
-              {% endif %}
-              {% if label.qty %}
-                qty: "Qty: {{ label.qty }}",
-              {% else %}
-                qty: "Qty: N/A",
-              {% endif %}
-              {% if label.img %}
-                img: "{{ label.img }}",
-              {% endif %}
-              {% if label.date %}
-                date: "{{ label.date }}",
-              {% endif %}
-              {% if label.desc %}
-                desc: "{{ label.desc }}",
-              {% endif %}
-              {% if label.price %}
-                price: "{{ label.price | pretty_price }}",
-              {% endif %}
-                alt_skus: [
-              {% for alt_sku in label.alt_skus %}
-                "{{ alt_sku }}",
-              {% endfor %}
-              ]},
-            {% endfor %}
-          ],
+    <a href="/?sort=preserve"><button class="sort-btn" id="sort-preserve">Original Order</button></a>
+    <a href="/?sort=upc"><button class="sort-btn" id="sort-upc">UPC</button></a>
+    <a href="/?sort=sku"><button class="sort-btn" id="sort-sku">SKU</button></a>
+    <a href="/?sort=date"><button class="sort-btn" id="sort-date">Date</button></a>
+    {% for page in pages %}
+      <div class="page">
+      {% for label in page %}
+        <div class="label">
+        {% if label.price %}
+        <div class="price">{{ label.price | pretty_price }}</div>
+        {% endif %}
+        {% if label.sku %}
+        <div class="sku">{{ label.sku }}</div>{% else %}<div class="sku">Missing SKU</div>
+        {% endif %}
+        {% if label.desc %}
+        <div class="description">{{ label.desc }}</div>
+        {% else %}
+        <div class="description">Missing Desc</div>
+        {% endif %}
+        {% if label.ean13 %}
+        <div class="ean13-text">{{ label.ean13 | format_ean13 }}</div>
+        <img src="{{ label.ean13 | encode_barcode }}" alt="Error while encoding" class="barcode" />
+        {% else %}
+        <div class="ean13-text">Missing UPC</div>
+        {% endif %}
+        {% if label.date %}
+        <div class="date">{{ label.date }}</div>
+        {% endif %}
+        <div class="qty">
+          Qty:&nbsp;
+          {% if label.qty %}
+          {{ label.qty }}
+          {% else %}
+          N/A
+          {% endif %}
+        </div>
+        <div class="alt-code-box">
+          {% for sku in label.alt_skus %}
+            <div class="small-text">{{ sku }}</div>
+          {% endfor %}
+          </div>
+          <img
+            src="{{ label.img }}"
+            alt="{{ label.desc }} Img"
+            class="product-image"
+          />
+        </div>
         {% endfor %}
-      ];
-      displayPages(defaultOrder);
-    });
-
-    /**
-     * Render the JSON labels in the HTML
-     */
-    function displayPages(pages) {
-      document.querySelector("body").replaceChild(
-        e(
-          "section",
-          { id: "pages" },
-          pages.map((page) => {
-            return e(
-              "div",
-              { class: "page" },
-              page.map((label) => {
-                let lab = e("div", { class: "label" }, []);
-                for (const prop in label) {
-                  if (label.hasOwnProperty(prop)) {
-                    if (prop === "img") {
-                      lab.appendChild(
-                        e(
-                          "img",
-                          {
-                            src: label.img,
-                            alt: (label.desc || "Missing Desc") + " Img",
-                          },
-                          [],
-                        ),
-                      );
-                    } else if (prop === "barcode") {
-                      lab.appendChild(
-                        e(
-                          "img",
-                          {
-                            src: label.barcode,
-                            alt: "Error while encoding",
-                            class: "barcode",
-                          },
-                          [],
-                        ),
-                      );
-                    } else if (prop === "alt_skus") {
-                      lab.appendChild(
-                        e(
-                          "div",
-                          { class: "alt-code-box" },
-                          label.alt_skus.map((sku) => {
-                            return e("div", { class: "small-text" }, [sku]);
-                          }),
-                        ),
-                      );
-                    } else {
-                      lab.appendChild(e("div", { class: prop }, [label[prop] || "Missing",]));
-                    }
-                  }
-                }
-                return lab;
-              }),
-            );
-          }),
-        ),
-        document.querySelector("#pages"),
-      );
-    }
-</script>
+      </div>
+    {% endfor %}
+  </body>
 </html>
