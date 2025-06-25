@@ -12,30 +12,6 @@ use std::{
 use clap::Parser;
 use generator::{Label, template_env};
 
-#[derive(Clone, ValueEnum)]
-enum SortOption {
-    Upc,
-    Sku,
-    Date,
-    Preserve,
-}
-
-impl SortOption {
-    pub fn prompt() -> Result<Self, io::Error> {
-        let raw = input("Sort option: [preserve] ")?;
-        match raw.trim().to_lowercase().as_ref() {
-            "preserve" | "" => return Ok(Self::Preserve),
-            "upc" => return Ok(Self::Upc),
-            "sku" => return Ok(Self::Sku),
-            "date" => return Ok(Self::Date),
-            _ => {
-                println!("Options are preserve, upc, sku, date");
-                return Self::prompt();
-            }
-        }
-    }
-}
-
 #[derive(Parser)]
 struct Cli {
     /// Path the the TSV file containing the data for ABC report 2-16 (Bill Details)
@@ -61,9 +37,6 @@ struct Cli {
         default_value = "C:\\ABC Software\\Database Export\\Company001\\Data\\item_posted.data"
     )]
     posted_file: String,
-
-    #[arg(short, long)]
-    sort: Option<SortOption>,
 }
 
 fn input(msg: &str) -> Result<String, io::Error> {
@@ -111,58 +84,11 @@ pub fn read_216(tabfile: &str) -> Result<Vec<(String, Option<u32>)>, String> {
     Ok(skus_qtys)
 }
 
-fn sort_labels(labels: &mut [Label], sort_option: SortOption) {
-    match sort_option {
-        SortOption::Upc => labels.sort_by(|a, b| {
-            let a = match a.ean13() {
-                Some(e) => e.to_string(),
-                None => return Ordering::Less,
-            };
-            let b = match b.ean13() {
-                Some(e) => e.to_string(),
-                None => return Ordering::Greater,
-            };
-            let trans_a = format!("{}{}", &a[10..], &a[..11]);
-            let trans_b = format!("{}{}", &b[10..], &b[..11]);
-            trans_a.cmp(&trans_b)
-        }),
-        SortOption::Sku => labels.sort_by(|a, b| {
-            let a = match a.sku() {
-                Some(s) => s,
-                None => return Ordering::Less,
-            };
-            let b = match b.sku() {
-                Some(s) => s,
-                None => return Ordering::Greater,
-            };
-            a.cmp(&b)
-        }),
-        SortOption::Date => labels.sort_by(|a, b| {
-            let a = match a.date() {
-                Some(d) => d,
-                None => return Ordering::Less,
-            };
-            let b = match b.date() {
-                Some(d) => d,
-                None => return Ordering::Greater,
-            };
-            a.cmp(&b)
-        }),
-        SortOption::Preserve => (),
     }
 }
 
 fn main() -> Result<(), String> {
     let cli = Cli::parse();
-    let sort = match cli.sort {
-        None => SortOption::prompt().or_else(|e| {
-            Err(format!(
-                "Failed to read user input for sorting option due to {}",
-                e
-            ))
-        })?,
-        Some(o) => o,
-    };
     let skus_qtys = read_216(&cli.tabfile)?;
     let mut img_cache = product::read_cached_imgs();
     let all_products = product::parse_abc_item_files(&cli.detail_file, &cli.posted_file)
