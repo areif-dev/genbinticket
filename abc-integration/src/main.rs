@@ -84,10 +84,26 @@ pub fn read_216(tabfile: &str) -> Result<Vec<(String, Option<u32>)>, String> {
     Ok(skus_qtys)
 }
 
+async fn labels_from_skus(
+    skus_qtys: Vec<(String, Option<u32>)>,
+    all_products: &HashMap<String, AbcProduct>,
+    img_cache: &mut HashMap<Ean13, String>,
+) -> Vec<Label> {
+    let mut labels = Vec::new();
+    for (sku, qty) in skus_qtys {
+        let Some(product) = all_products.get(&sku) else {
+            continue;
+        };
+        let Some(label) = product.label(img_cache, qty).await else {
+            continue;
+        };
+        labels.push(label);
     }
+    labels
 }
 
-fn main() -> Result<(), String> {
+#[tokio::main]
+async fn main() -> Result<(), String> {
     let cli = Cli::parse();
     let skus_qtys = read_216(&cli.tabfile)?;
     let mut img_cache = product::read_cached_imgs();
@@ -104,15 +120,7 @@ fn main() -> Result<(), String> {
         );
     }
     eprintln!("Fetching images. This may take some time...");
-    let mut labels: Vec<Label> = good_skus
-        .into_iter()
-        .filter_map(|(sku, qty)| {
-            let product = all_products.get(&sku).unwrap();
-            product.label(&mut img_cache, qty)
-        })
-        .collect();
-
-    sort_labels(&mut labels, sort);
+    let labels = labels_from_skus(good_skus, &all_products, &mut img_cache).await;
 
     // Save the updated image cache for faster fetching next time
     product::write_cached_imgs(&img_cache)
