@@ -1,12 +1,14 @@
 mod product;
+mod server;
 
-use clap::ValueEnum;
+use inventory_utils::Ean13;
+use product::AbcProduct;
+use serde::Deserialize;
+use server::start_server;
 use std::{
     cmp::Ordering,
-    env::current_dir,
-    fs,
+    collections::HashMap,
     io::{self, Write, stdin, stdout},
-    path::PathBuf,
 };
 
 use clap::Parser;

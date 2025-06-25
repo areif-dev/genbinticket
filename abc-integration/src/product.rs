@@ -1,5 +1,5 @@
-use chrono::{NaiveDate, Utc};
-use generator::{CustomNaiveDate, Label};
+use chrono::Utc;
+use generator::Label;
 use rust_decimal::Decimal;
 use serde::{Deserialize, ser::Error};
 use std::{
