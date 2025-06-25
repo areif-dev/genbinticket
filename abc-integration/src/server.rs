@@ -94,7 +94,7 @@ pub async fn start_server(labels: Vec<Label>) -> Result<(), io::Error> {
     });
 
     let app = Router::new().route("/", get(root)).with_state(shared_state);
-    let listener = tokio::net::TcpListener::bind(("127.0.1.0", 0)).await?;
+    let listener = tokio::net::TcpListener::bind(("localhost", 0)).await?;
     let addr = listener.local_addr()?;
     eprintln!("Starting server on address {}", addr);
     webbrowser::open(&format!("http://localhost:{}", addr.port()))?;
