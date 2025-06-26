@@ -98,8 +98,12 @@ pub async fn start_server(labels: Vec<Label>, debug: bool) -> Result<(), io::Err
         .route("/", get(root))
         .nest_service("/static", ServeDir::new("./static"))
         .with_state(shared_state);
-    let address = if debug { "0.0.0.0" } else { "localhost" };
-    let listener = tokio::net::TcpListener::bind((address, 0)).await?;
+    let (address, port) = if debug {
+        ("0.0.0.0", 5000)
+    } else {
+        ("localhost", 0)
+    };
+    let listener = tokio::net::TcpListener::bind((address, port)).await?;
     let addr = listener.local_addr()?;
     eprintln!("Starting server on address {}", addr);
     webbrowser::open(&format!("http://localhost:{}", addr.port()))?;
