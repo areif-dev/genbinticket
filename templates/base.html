@@ -1,194 +1,205 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Printable Labels</title>
-    <style>
-      body {
-        margin: 0;
-        padding: 0;
-      }
-      .page {
-        width: 8.5in;
-        height: 11in;
-        padding: 13.5mm 4.54mm 10.3mm 4.54mm;
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between;
-        align-content: flex-start;
-        box-sizing: border-box;
-        page-break-after: always;
-      }
-      .label {
-        position: relative;
-        width: 2.625in;
-        height: 1in;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        box-sizing: border-box;
-        font-family: "Cascadia Code", "Courier New", Courier, monospace;
-        overflow: hidden;
-        margin-bottom: 0.1mm;
-      }
-      .price {
-        position: absolute;
-        top: 0.033in;
-        left: 0.033in;
-        max-width: 1.26in;
-        max-height: 0.269in;
-        font-family: "Cascadia Code", "Courier New", Courier, monospace;
-        font-size: 0.267in;
-        font-weight: bold;
-        overflow: hidden;
-      }
-      .sku {
-        position: absolute;
-        top: 0.33in;
-        left: 0.033in;
-        max-width: 1.26in;
-        max-height: 0.134in;
-        font-family: "Cascadia Code", "Courier New", Courier, monospace;
-        font-size: 0.133in;
-        font-weight: bold;
-        overflow: hidden;
-      }
-      .description {
-        position: absolute;
-        top: 0.47in;
-        left: 0.033in;
-        max-width: 2in;
-        max-height: 0.118in;
-        font-family: "Cascadia Code", "Courier New", Courier, monospace;
-        font-size: 0.117in;
-        font-weight: bold;
-        overflow: hidden;
-      }
-      .ean13-text {
-        position: absolute;
-        top: 0.663in;
-        left: 0.033in;
-        max-width: 1.26in;
-        font-family: "Cascadia Code", "Courier New", Courier, monospace;
-        font-size: 0.083in;
-      }
-      .date {
-        position: absolute;
-        top: 0.885in;
-        left: 0.81in;
-        font-family: "Cascadia Code", "Courier New", Courier, monospace;
-        font-size: 0.083in;
-        max-width: 0.5in;
-      }
-      .qty {
-        position: absolute;
-        top: 0.885in;
-        left: 1.5in;
-        font-family: "Cascadia Code", "Courier New", Courier, monospace;
-        font-size: 0.083in;
-        max-width: 0.6in;
-      }
-      .small-text {
-        font-family: "Cascadia Code", "Courier New", Courier, monospace;
-        font-size: 0.083in;
-      }
-      .alt-code-box {
-        position: absolute;
-        display: block;
-        top: 0.033in;
-        left: 1.3in;
-        max-height: 0.968in;
-        max-width: 0.697in;
-        overflow: hidden;
-      }
-      .barcode {
-        position: absolute;
-        top: 0.757in;
-        left: 0.033in;
-        height: 0.207in;
-        width: 0.73in;
-      }
-      .product-image {
-        position: absolute;
-        top: 0in;
-        left: 2in;
-        height: 1in;
-        max-width: 0.62in;
-        overflow: hidden;
-        object-fit: cover;
-      }
-    </style>
-    <style media="screen">
-      .sort-btn {
-        display: inline;
-      }
-    </style>
-    <style media="print">
-      @page {
-        margin: 0;
-      }
 
-      .sort-btn {
-        display: none;
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Printable Labels</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
 
-      label {
-        display: none;
-      }
-    </style>
-  </head>
-  <body>
-    <label for="sort-group">Sort:</label>
-    <a href="/?sort=preserve"><button class="sort-btn" id="sort-preserve">Original Order</button></a>
-    <a href="/?sort=upc"><button class="sort-btn" id="sort-upc">UPC</button></a>
-    <a href="/?sort=sku"><button class="sort-btn" id="sort-sku">SKU</button></a>
-    <a href="/?sort=date"><button class="sort-btn" id="sort-date">Date</button></a>
-    {% for page in pages %}
-      <div class="page">
-      {% for label in page %}
-        <div class="label">
-        {% if label.price %}
-        <div class="price">{{ label.price | pretty_price }}</div>
-        {% endif %}
-        {% if label.sku %}
-        <div class="sku">{{ label.sku }}</div>{% else %}<div class="sku">Missing SKU</div>
-        {% endif %}
-        {% if label.desc %}
-        <div class="description">{{ label.desc }}</div>
+    .page {
+      width: 8.5in;
+      height: 11in;
+      padding: 13.5mm 4.54mm 10.3mm 4.54mm;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-content: flex-start;
+      box-sizing: border-box;
+      page-break-after: always;
+    }
+
+    .label {
+      position: relative;
+      width: 2.625in;
+      height: 1in;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-sizing: border-box;
+      font-family: "Cascadia Code", "Courier New", Courier, monospace;
+      overflow: hidden;
+      margin-bottom: 0.1mm;
+    }
+
+    .price {
+      position: absolute;
+      top: 0.033in;
+      left: 0.033in;
+      max-width: 1.26in;
+      max-height: 0.269in;
+      font-family: "Cascadia Code", "Courier New", Courier, monospace;
+      font-size: 0.267in;
+      font-weight: bold;
+      overflow: hidden;
+    }
+
+    .sku {
+      position: absolute;
+      top: 0.33in;
+      left: 0.033in;
+      max-width: 1.26in;
+      max-height: 0.134in;
+      font-family: "Cascadia Code", "Courier New", Courier, monospace;
+      font-size: 0.133in;
+      font-weight: bold;
+      overflow: hidden;
+    }
+
+    .description {
+      position: absolute;
+      top: 0.47in;
+      left: 0.033in;
+      max-width: 2in;
+      max-height: 0.118in;
+      font-family: "Cascadia Code", "Courier New", Courier, monospace;
+      font-size: 0.117in;
+      font-weight: bold;
+      overflow: hidden;
+    }
+
+    .ean13-text {
+      position: absolute;
+      top: 0.663in;
+      left: 0.033in;
+      max-width: 1.26in;
+      font-family: "Cascadia Code", "Courier New", Courier, monospace;
+      font-size: 0.083in;
+    }
+
+    .date {
+      position: absolute;
+      top: 0.885in;
+      left: 0.81in;
+      font-family: "Cascadia Code", "Courier New", Courier, monospace;
+      font-size: 0.083in;
+      max-width: 0.5in;
+    }
+
+    .qty {
+      position: absolute;
+      top: 0.885in;
+      left: 1.5in;
+      font-family: "Cascadia Code", "Courier New", Courier, monospace;
+      font-size: 0.083in;
+      max-width: 0.6in;
+    }
+
+    .small-text {
+      font-family: "Cascadia Code", "Courier New", Courier, monospace;
+      font-size: 0.083in;
+    }
+
+    .alt-code-box {
+      position: absolute;
+      display: block;
+      top: 0.033in;
+      left: 1.3in;
+      max-height: 0.968in;
+      max-width: 0.697in;
+      overflow: hidden;
+    }
+
+    .barcode {
+      position: absolute;
+      top: 0.757in;
+      left: 0.033in;
+      height: 0.207in;
+      width: 0.73in;
+    }
+
+    .product-image {
+      position: absolute;
+      top: 0in;
+      left: 2in;
+      height: 1in;
+      max-width: 0.62in;
+      overflow: hidden;
+      object-fit: cover;
+    }
+  </style>
+  <style media="screen">
+    .sort-btn {
+      display: inline;
+    }
+  </style>
+  <style media="print">
+    @page {
+      margin: 0;
+    }
+
+    .sort-btn {
+      display: none;
+    }
+
+    label {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <label for="sort-group">Sort:</label>
+  <a href="/?sort=preserve"><button class="sort-btn" id="sort-preserve">Original Order</button></a>
+  <a href="/?sort=upc"><button class="sort-btn" id="sort-upc">UPC</button></a>
+  <a href="/?sort=sku"><button class="sort-btn" id="sort-sku">SKU</button></a>
+  <a href="/?sort=date"><button class="sort-btn" id="sort-date">Date</button></a>
+  {% for page in pages %}
+  <div class="page">
+    {% for label in page %}
+    <div class="label">
+      {% if label.price %}
+      <div class="price">{{ label.price | pretty_price }}</div>
+      {% endif %}
+      {% if label.sku %}
+      <div class="sku">{{ label.sku }}</div>{% else %}<div class="sku">Missing SKU</div>
+      {% endif %}
+      {% if label.desc %}
+      <div class="description">{{ label.desc }}</div>
+      {% else %}
+      <div class="description">Missing Desc</div>
+      {% endif %}
+      {% if label.ean13 %}
+      <div class="ean13-text">{{ label.ean13 | format_ean13 }}</div>
+      <img src="{{ label.ean13 | encode_barcode }}" alt="Error while encoding" class="barcode" />
+      {% else %}
+      <div class="ean13-text">Missing UPC</div>
+      {% endif %}
+      {% if label.date %}
+      <div class="date">{{ label.date }}</div>
+      {% endif %}
+      <div class="qty">
+        Qty:&nbsp;
+        {% if label.qty %}
+        {{ label.qty }}
         {% else %}
-        <div class="description">Missing Desc</div>
+        N/A
         {% endif %}
-        {% if label.ean13 %}
-        <div class="ean13-text">{{ label.ean13 | format_ean13 }}</div>
-        <img src="{{ label.ean13 | encode_barcode }}" alt="Error while encoding" class="barcode" />
-        {% else %}
-        <div class="ean13-text">Missing UPC</div>
-        {% endif %}
-        {% if label.date %}
-        <div class="date">{{ label.date }}</div>
-        {% endif %}
-        <div class="qty">
-          Qty:&nbsp;
-          {% if label.qty %}
-          {{ label.qty }}
-          {% else %}
-          N/A
-          {% endif %}
-        </div>
-        <div class="alt-code-box">
-          {% for sku in label.alt_skus %}
-            <div class="small-text">{{ sku }}</div>
-          {% endfor %}
-          </div>
-          <img
-            src="{{ label.img }}"
-            alt="{{ label.desc }} Img"
-            class="product-image"
-          />
-        </div>
+      </div>
+      <div class="alt-code-box">
+        {% for sku in label.alt_skus %}
+        <div class="small-text">{{ sku }}</div>
         {% endfor %}
       </div>
+      <img src="{{ label.img }}" alt="{{ label.desc }} Img" class="product-image" />
+    </div>
     {% endfor %}
-  </body>
+  </div>
+  {% endfor %}
+</body>
+
 </html>
