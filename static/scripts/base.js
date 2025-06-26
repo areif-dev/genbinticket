@@ -46,13 +46,63 @@ function padLabels() {
   if (pages.length === 0) {
     return;
   }
+  const pageN = pages.length;
   const lastPage = pages[pages.length - 1];
   const labels = lastPage.querySelectorAll(".label");
   for (let i = 0; i < (30 - labels.length); i++) {
-    lastPage.appendChild(e("div", { class: "label" }, []));
+    lastPage.appendChild(e("div", { class: "label", draggable: true, id: `${pageN}-${i + labels.length + 1}` }, []));
   }
+}
+
+function dragInit() {
+  let source;
+  document.querySelectorAll(".label").forEach((label) => {
+    label.addEventListener("dragstart", (e) => {
+      e.target.classList.add("dragging");
+      source = e.currentTarget;
+    });
+
+    label.addEventListener("dragenter", (e) => {
+      e.preventDefault();
+      if (!e.target.classList.contains("dragging")) {
+        e.target.classList.add("potential-drop");
+      }
+    });
+
+    label.addEventListener("dragover", (e) => {
+      e.preventDefault();
+    });
+
+    label.addEventListener("dragleave", (e) => {
+      e.target.classList.remove("potential-drop");
+    });
+
+    label.addEventListener("drop", (e) => {
+      e.preventDefault();
+      const target = e.currentTarget;
+
+      if (source === target) return;
+
+      const sourceClone = source.cloneNode(true);
+      const targetClone = target.cloneNode(true);
+      source.replaceWith(targetClone);
+      target.replaceWith(sourceClone);
+    });
+
+    label.addEventListener("dragend", (_) => {
+      document.querySelectorAll(".label").forEach((el) => {
+        el.classList.remove("dragging");
+        el.classList.remove("potential-drop");
+        // This erases all label event listeners so when we reinit them they don't stack up
+        // exponentially and cause performance issues
+        el.replaceWith(el.cloneNode(true));
+      });
+      dragInit();  // We need to reinit here because swapping the nodes erases event listeners
+    });
+  });
 }
 
 window.addEventListener("load", () => {
   padLabels();
+  dragInit();
 });

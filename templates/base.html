@@ -131,6 +131,12 @@
       overflow: hidden;
       object-fit: cover;
     }
+
+    .dragging,
+    .potential-drop {
+      background-color: lightblue;
+      border-color: darkblue;
+    }
   </style>
   <style media="screen">
     .sort-btn {
@@ -159,9 +165,10 @@
   <a href="/?sort=sku"><button class="sort-btn" id="sort-sku">SKU</button></a>
   <a href="/?sort=date"><button class="sort-btn" id="sort-date">Date</button></a>
   {% for page in pages %}
+  {% set pageN = loop.index %}
   <div class="page">
     {% for label in page %}
-    <div class="label">
+    <div class="label" draggable="true" id="{{ pageN }}-{{ loop.index }}">
       {% if label.price %}
       <div class="price">{{ label.price | pretty_price }}</div>
       {% endif %}
