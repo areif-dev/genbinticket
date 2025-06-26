@@ -1,4 +1,4 @@
-use std::str::FromStr;
+use std::{fs, str::FromStr};
 
 use barcoders::{
     generators::image::{Color, Image, Rotation},
@@ -76,7 +76,7 @@ pub fn setup_env() -> Result<TemplateEnvironment<'static>, minijinja::Error> {
     env.add_filter("pretty_price", pretty_price);
     env.add_filter("encode_barcode", encode_barcode);
     env.add_filter("format_ean13", format_ean13);
-    env.add_template("base.html", include_str!("templates/base.html"))?;
+    env.set_loader(minijinja::path_loader("templates"));
     Ok(env)
 }
 
