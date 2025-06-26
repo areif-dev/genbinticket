@@ -34,6 +34,10 @@ struct Cli {
         default_value = "C:\\ABC Software\\Database Export\\Company001\\Data\\item_posted.data"
     )]
     posted_file: String,
+
+    /// Enable debug mode, which starts the server on 0.0.0.0
+    #[arg(short = 'D', long)]
+    debug: bool,
 }
 
 pub fn read_216(tabfile: &str) -> Result<Vec<(String, Option<u32>)>, String> {
@@ -115,7 +119,7 @@ async fn main() -> Result<(), String> {
     product::write_cached_imgs(&img_cache)
         .or_else(|e| Err(format!("Can't save product image cache due to {}", e)))?;
 
-    start_server(labels)
+    start_server(labels, cli.debug)
         .await
         .or_else(|e| Err(format!("Failed to start server due to {}", e)))?;
     Ok(())

@@ -85,7 +85,7 @@ async fn root(
     ))
 }
 
-pub async fn start_server(labels: Vec<Label>) -> Result<(), io::Error> {
+pub async fn start_server(labels: Vec<Label>, debug: bool) -> Result<(), io::Error> {
     let env =
         template_env::setup_env().or_else(|e| Err(io::Error::new(io::ErrorKind::Other, e)))?;
     let shared_state = Arc::new(AppState {
@@ -95,6 +95,8 @@ pub async fn start_server(labels: Vec<Label>) -> Result<(), io::Error> {
 
     let app = Router::new().route("/", get(root)).with_state(shared_state);
     let listener = tokio::net::TcpListener::bind(("localhost", 0)).await?;
+    let address = if debug { "0.0.0.0" } else { "localhost" };
+    let listener = tokio::net::TcpListener::bind((address, 0)).await?;
     let addr = listener.local_addr()?;
     eprintln!("Starting server on address {}", addr);
     webbrowser::open(&format!("http://localhost:{}", addr.port()))?;
