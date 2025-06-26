@@ -1,4 +1,4 @@
-use std::{fs, str::FromStr};
+use std::str::FromStr;
 
 use barcoders::{
     generators::image::{Color, Image, Rotation},
