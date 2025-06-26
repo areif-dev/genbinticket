@@ -1,5 +1,6 @@
 use clap::ValueEnum;
 use std::{cmp::Ordering, io, sync::Arc};
+use tower_http::services::ServeDir;
 
 use axum::{
     Router,
@@ -93,8 +94,10 @@ pub async fn start_server(labels: Vec<Label>, debug: bool) -> Result<(), io::Err
         labels,
     });
 
-    let app = Router::new().route("/", get(root)).with_state(shared_state);
-    let listener = tokio::net::TcpListener::bind(("localhost", 0)).await?;
+    let app = Router::new()
+        .route("/", get(root))
+        .nest_service("/static", ServeDir::new("./static"))
+        .with_state(shared_state);
     let address = if debug { "0.0.0.0" } else { "localhost" };
     let listener = tokio::net::TcpListener::bind((address, 0)).await?;
     let addr = listener.local_addr()?;
