@@ -171,10 +171,9 @@
   <a href="/?sort=sku"><button class="sort-btn" id="sort-sku">SKU</button></a>
   <a href="/?sort=date"><button class="sort-btn" id="sort-date">Date</button></a>
   {% for page in pages %}
-  {% set pageN = loop.index %}
   <div class="page">
     {% for label in page %}
-    <div class="label" draggable="true" id="{{ pageN }}-{{ loop.index }}">
+    <div class="label" draggable="true">
       {% if label.price %}
       <div class="price">{{ label.price | pretty_price }}</div>
       {% endif %}

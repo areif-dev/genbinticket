@@ -46,11 +46,10 @@ function padLabels() {
   if (pages.length === 0) {
     return;
   }
-  const pageN = pages.length;
   const lastPage = pages[pages.length - 1];
   const labels = lastPage.querySelectorAll(".label");
   for (let i = 0; i < (30 - labels.length); i++) {
-    lastPage.appendChild(e("div", { class: "label", draggable: true, id: `${pageN}-${i + labels.length + 1}` }, []));
+    lastPage.appendChild(e("div", { class: "label", draggable: true }, []));
   }
 }
 
