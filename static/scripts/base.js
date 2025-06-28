@@ -53,7 +53,18 @@ function padLabels() {
   }
 }
 
+/**
+ * Initialize the drag and drop functionality of the labels 
+ */
 function dragInit() {
+  document.querySelectorAll(".label").forEach((el) => {
+    el.classList.remove("dragging");
+    el.classList.remove("potential-drop");
+    // This erases all label event listeners so when we reinit them they don't stack up
+    // exponentially and cause performance issues
+    el.replaceWith(el.cloneNode(true));
+  });
+
   let source;
   document.querySelectorAll(".label").forEach((label) => {
     label.addEventListener("dragstart", (e) => {
@@ -89,13 +100,6 @@ function dragInit() {
     });
 
     label.addEventListener("dragend", (_) => {
-      document.querySelectorAll(".label").forEach((el) => {
-        el.classList.remove("dragging");
-        el.classList.remove("potential-drop");
-        // This erases all label event listeners so when we reinit them they don't stack up
-        // exponentially and cause performance issues
-        el.replaceWith(el.cloneNode(true));
-      });
       dragInit();  // We need to reinit here because swapping the nodes erases event listeners
     });
   });
