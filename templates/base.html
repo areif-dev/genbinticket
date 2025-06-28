@@ -139,6 +139,12 @@
       background-color: lightblue;
       border-color: darkblue;
     }
+
+    #add-page-btn {
+      margin-bottom: 10px;
+      margin-left: 50%;
+      padding: 3px 20px;
+    }
   </style>
   <style media="screen">
     .sort-btn {
@@ -150,7 +156,7 @@
       margin: 0;
     }
 
-    .sort-btn {
+    button {
       display: none;
     }
 
@@ -212,6 +218,7 @@
     {% endfor %}
   </div>
   {% endfor %}
+  <button id="add-page-btn">Add Page</button>
 </body>
 <script src="/static/scripts/base.js"></script>
 

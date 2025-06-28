@@ -105,7 +105,48 @@ function dragInit() {
   });
 }
 
+/**
+ * Append a page of blank labels to the print stack 
+ *
+ * @param {Event} ev The event that triggered this call
+ */
+function addPage(ev) {
+  const button = ev.currentTarget;
+  const body = document.querySelector("body");
+  let labels = [];
+  for (let i = 0; i < 30; i++) {
+    labels.push(e("div", { class: "label", draggable: true }, []));
+  }
+
+  const page = e("div", { class: "page" }, labels);
+  body.insertBefore(page, button);
+  dragInit();
+}
+
+/** 
+ * Prepare the pages for printing when the user makes a print request
+ */
+function handlePrint() {
+  const pages = document.querySelectorAll(".page");
+  pages.forEach((page) => {
+    const labels = page.querySelectorAll(".label");
+    let hasContent = false;
+    for (const label of labels) {
+      if (label.hasChildNodes()) {
+        hasContent = true;
+        break;
+      }
+    }
+    if (!hasContent) {
+      page.remove();
+    }
+  });
+}
+
 window.addEventListener("load", () => {
+  document.querySelector("#add-page-btn").addEventListener("click", addPage);
   padLabels();
   dragInit();
 });
+
+window.addEventListener("beforeprint", handlePrint);
