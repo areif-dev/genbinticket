@@ -79,7 +79,7 @@ async fn root(
     Query(query): Query<RootQuery>,
 ) -> Result<Html<String>, (StatusCode, String)> {
     let mut labels = state.labels.clone();
-    sort_labels(&mut labels, query.sort.unwrap_or(SortOption::Preserve));
+    sort_labels(&mut labels, query.sort.unwrap_or(SortOption::Upc));
     Ok(Html::from(
         render_template(&state.template_env, &labels)
             .or_else(|e| Err((StatusCode::INTERNAL_SERVER_ERROR, format!("{}", e))))?,
