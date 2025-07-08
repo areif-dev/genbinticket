@@ -1,7 +1,7 @@
 pub mod template_env;
 
 use chrono::NaiveDate;
-use inventory_utils::Ean13;
+use ean13::Ean13;
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 

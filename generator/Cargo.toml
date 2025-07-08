@@ -9,7 +9,7 @@ base64 = "0.22.1"
 chrono = "0.4.41"
 clap = { version = "4.5.40", features = ["derive"] }
 image = "0.25.6"
-inventory-utils = { git = "https://github.com/areif-dev/inventory-utils", version = "0.3.2" }
+ean13 = { git = "https://github.com/areif-dev/ean13", version = "0.4.0" }
 minijinja = { version = "2.10.2", features = ["loader"] }
 rust_decimal = "1.37.1"
 serde = { version = "1.0.219", features = ["derive"] }

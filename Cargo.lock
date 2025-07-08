@@ -10,8 +10,8 @@ dependencies = [
  "chrono",
  "clap",
  "csv",
+ "ean13",
  "generator",
- "inventory-utils",
  "reqwest",
  "rust_decimal",
  "serde",
@@ -594,6 +594,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "ean13"
+version = "0.4.0"
+source = "git+https://github.com/areif-dev/ean13#d63175fed9a10dc781d99c4633b814cc0793f3c6"
+dependencies = [
+ "serde",
+]
+
+[[package]]
 name = "either"
 version = "1.15.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -778,8 +786,8 @@ dependencies = [
  "base64",
  "chrono",
  "clap",
+ "ean13",
  "image",
- "inventory-utils",
  "minijinja",
  "rust_decimal",
  "serde",
@@ -1195,14 +1203,6 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 2.0.104",
-]
-
-[[package]]
-name = "inventory-utils"
-version = "0.3.2"
-source = "git+https://github.com/areif-dev/inventory-utils#66d6173c8a1ae71683b4ac828a6f55d519fecee0"
-dependencies = [
- "serde",
 ]
 
 [[package]]

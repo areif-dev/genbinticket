@@ -10,7 +10,7 @@ use std::{
     time::Duration,
 };
 
-use inventory_utils::Ean13;
+use ean13::Ean13;
 
 fn price_from_str(price_str: &str) -> Result<Decimal, rust_decimal::Error> {
     let price_str: String = price_str

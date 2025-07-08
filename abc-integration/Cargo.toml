@@ -9,7 +9,7 @@ chrono = "0.4.41"
 clap = { version = "4.5.40", features = ["derive"] }
 csv = "1.3.1"
 generator = { version = "0.2.0", path = "../generator" }
-inventory-utils = { git = "https://github.com/areif-dev/inventory-utils", version = "0.3.2" }
+ean13 = { git = "https://github.com/areif-dev/ean13", version = "0.4.0" }
 reqwest = { version = "0.12.20", features = ["blocking"] }
 rust_decimal = "1.37.2"
 serde = "1.0.219"

@@ -1,7 +1,7 @@
 mod product;
 mod server;
 
-use inventory_utils::Ean13;
+use ean13::Ean13;
 use product::AbcProduct;
 use server::start_server;
 use std::collections::HashMap;
