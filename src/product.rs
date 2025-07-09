@@ -12,6 +12,20 @@ use std::{
 
 use ean13::Ean13;
 
+/// Strips out any characters from a string that would not be part of a base10 decimal number. EG
+/// "$" or the string "USD"
+///
+/// # Arguments
+///
+/// * `price_str` - The raw, unfiltered string to parse a number from
+///
+/// # Returns
+///
+/// A [`rust_decimal::Decimal`] number representing an exact price as extracted from `price_str`
+///
+/// # Errors
+///
+/// Forwards any [`rust_decimal::Error`] encountered while parsing data
 fn price_from_str(price_str: &str) -> Result<Decimal, rust_decimal::Error> {
     let price_str: String = price_str
         .chars()
