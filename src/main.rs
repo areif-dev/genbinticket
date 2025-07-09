@@ -2,12 +2,12 @@ mod product;
 mod server;
 
 use ean13::Ean13;
+use genbinticket::Label;
 use product::AbcProduct;
 use server::start_server;
 use std::collections::HashMap;
 
 use clap::Parser;
-use generator::{Label, template_env};
 
 #[derive(Parser)]
 struct Cli {

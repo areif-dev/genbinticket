@@ -8,11 +8,10 @@ use axum::{
     response::Html,
     routing::get,
 };
-use generator::{Label, template_env::TemplateEnvironment};
+use genbinticket::Label;
+use genbinticket::template_env::{self, *};
 use reqwest::StatusCode;
 use serde::Deserialize;
-
-use crate::template_env::{self, render_template};
 
 pub struct AppState {
     template_env: TemplateEnvironment<'static>,

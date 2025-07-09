@@ -1,5 +1,5 @@
 use chrono::Utc;
-use generator::Label;
+use genbinticket::Label;
 use rust_decimal::Decimal;
 use serde::{Deserialize, ser::Error};
 use std::{
