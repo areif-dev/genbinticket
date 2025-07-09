@@ -19,15 +19,30 @@ pub struct AppState {
     labels: Vec<Label>,
 }
 
+/// Specifies how the list of [`Label`]s are to be sorted
 #[derive(Clone, ValueEnum, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum SortOption {
+    /// Sorts [`Label`]s by the last 3 digits of their UPC/EAN. The last three digits are key as
+    /// these are usually the most unique and are usually what people look for.
     Upc,
+
+    /// Order by the sku of each product
     Sku,
+
+    /// Order by the date field
     Date,
+
+    /// Keep the original order that the labels were supplied to the program with
     Preserve,
 }
 
+/// Reorder the labels in place to match the selected [`SortOption`]
+///
+/// # Arguments
+///
+/// * `labels` - The collection of [`Label`]s to be sorted
+/// * `sort_option` - How the [`Label`]s are to be sorted
 fn sort_labels(labels: &mut [Label], sort_option: SortOption) {
     match sort_option {
         SortOption::Upc => labels.sort_by(|a, b| {
@@ -74,7 +89,8 @@ struct RootQuery {
     sort: Option<SortOption>,
 }
 
-async fn root(
+/// Handles GET requests made to the "/" path. Should respond with HTML page of labels to print
+async fn index(
     State(state): State<Arc<AppState>>,
     Query(query): Query<RootQuery>,
 ) -> Result<Html<String>, (StatusCode, String)> {
@@ -86,6 +102,7 @@ async fn root(
     ))
 }
 
+/// Configures and runs the http server for printing labels
 pub async fn start_server(labels: Vec<Label>, debug: bool) -> Result<(), io::Error> {
     let env =
         template_env::setup_env().or_else(|e| Err(io::Error::new(io::ErrorKind::Other, e)))?;
@@ -95,7 +112,7 @@ pub async fn start_server(labels: Vec<Label>, debug: bool) -> Result<(), io::Err
     });
 
     let app = Router::new()
-        .route("/", get(root))
+        .route("/", get(index))
         .nest_service("/static", ServeDir::new("./static"))
         .with_state(shared_state);
     let (address, port) = if debug {
