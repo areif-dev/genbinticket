@@ -31,8 +31,8 @@ You can simply run the executable genbinticket.exe. By default the app will look
 Usage: genbinticket [OPTIONS]
 
 Options:
-  -t, --tabfile <TABFILE>          Path the the TSV file containing the data for ABC report 2-16 (Bill Details) [default: "C:\\Users\\User\\Documents\\My ABC Files\\TabOutput.tsv"]
-  -d, --detail-file <DETAIL_FILE>  Path to the ABC Item Detail file obtained by running report 7-10 (SQL Export) [default: "C:\\ABC Software\\Database Export\\Company001\\Data\\item.data"]
-  -p, --posted-file <POSTED_FILE>  Path to the ABC Item Posted Data file obtained by running report 7-10 (SQL Export) [default: "C:\\ABC Software\\Database Export\\Company001\\Data\\item_posted.data"]
-  -D, --debug                      Enable debug mode, which starts the server on 0.0.0.0
-  -h, --help                       Print help
+*  -t, --tabfile <TABFILE>          Path the the TSV file containing the data for ABC report 2-16 (Bill Details) [default: "C:\\Users\\User\\Documents\\My ABC Files\\TabOutput.tsv"]
+*  -d, --detail-file <DETAIL_FILE>  Path to the ABC Item Detail file obtained by running report 7-10 (SQL Export) [default: "C:\\ABC Software\\Database Export\\Company001\\Data\\item.data"]
+*  -p, --posted-file <POSTED_FILE>  Path to the ABC Item Posted Data file obtained by running report 7-10 (SQL Export) [default: "C:\\ABC Software\\Database Export\\Company001\\Data\\item_posted.data"]
+*  -D, --debug                      Enable debug mode, which starts the server on 0.0.0.0
+*  -h, --help                       Print help
