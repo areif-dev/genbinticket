@@ -55,34 +55,6 @@ pub fn write_cached_imgs(cache: &HashMap<Ean13, String>) -> Result<(), std::io::
     Ok(())
 }
 
-#[cfg(feature = "vendor")]
-async fn fetch_img(ean: Ean13, cache: &mut HashMap<Ean13, String>) -> Option<String> {
-    None
-}
-
-#[cfg(not(feature = "vendor"))]
-async fn fetch_img(ean: Ean13, cache: &mut HashMap<Ean13, String>) -> Option<String> {
-    if let Some(url) = cache.get(&ean) {
-        return Some(url.to_string());
-    }
-
-    sleep(Duration::from_millis(100)); // Add a rate limit for better citizenship
-    let fetch_url = format!(
-        "https://api.upcitemdb.com/prod/trial/lookup?upc={}",
-        ean.to_upca_string()
-    );
-    let raw_response = reqwest::get(fetch_url).await.ok()?;
-    if !raw_response.status().is_success() {
-        return None;
-    }
-    let text = raw_response.text();
-    let resp: FetchImgResp = serde_json::from_str(&text.await.ok()?).ok()?;
-    let item = resp.items.get(0)?;
-    let img = item.images.get(0)?;
-    cache.insert(ean, img.to_string());
-    Some(img.to_string())
-}
-
 #[derive(Debug, Clone)]
 pub struct AbcProduct {
     sku: String,
@@ -111,6 +83,40 @@ impl AbcProduct {
         self.list
     }
 
+    #[cfg(feature = "vendor")]
+    async fn fetch_img(&self, cache: &mut HashMap<Ean13, String>) -> Option<String> {
+        let ean = self.upcs().last()?.clone();
+        if let Some(url) = cache.get(&ean) {
+            return Some(url.to_string());
+        }
+
+        None
+    }
+
+    #[cfg(not(feature = "vendor"))]
+    async fn fetch_img(&self, cache: &mut HashMap<Ean13, String>) -> Option<String> {
+        let ean = self.upcs().last()?.clone();
+        if let Some(url) = cache.get(&ean) {
+            return Some(url.to_string());
+        }
+
+        sleep(Duration::from_millis(100)); // Add a rate limit for better citizenship
+        let fetch_url = format!(
+            "https://api.upcitemdb.com/prod/trial/lookup?upc={}",
+            ean.to_upca_string()
+        );
+        let raw_response = reqwest::get(fetch_url).await.ok()?;
+        if !raw_response.status().is_success() {
+            return None;
+        }
+        let text = raw_response.text();
+        let resp: FetchImgResp = serde_json::from_str(&text.await.ok()?).ok()?;
+        let item = resp.items.get(0)?;
+        let img = item.images.get(0)?;
+        cache.insert(ean.clone(), img.to_string());
+        Some(img.to_string())
+    }
+
     pub async fn label(
         &self,
         cache: &mut HashMap<Ean13, String>,
@@ -118,7 +124,7 @@ impl AbcProduct {
     ) -> Option<Label> {
         let upc = self.upcs().last()?.clone();
 
-        let mut label = match fetch_img(upc.clone(), cache).await {
+        let mut label = match self.fetch_img(cache).await {
             Some(i) => Label::new().with_img(&i),
             None => Label::new(),
         };
