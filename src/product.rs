@@ -64,6 +64,7 @@ pub struct AbcProduct {
     list: Decimal,
     stock: f64,
     last_sold: Option<chrono::NaiveDate>,
+    vendor: String,
 }
 
 impl AbcProduct {
@@ -81,6 +82,10 @@ impl AbcProduct {
 
     pub fn list(&self) -> Decimal {
         self.list
+    }
+
+    pub fn vendor(&self) -> String {
+        self.vendor.clone()
     }
 
     #[cfg(feature = "vendor")]
@@ -210,6 +215,7 @@ pub fn parse_abc_item_files(
             "Cannot parse a price in cents for list in row {}",
             i
         ))))?;
+        let vendor = row.get(10).unwrap_or("").trim().to_string();
         let mut alt_skus = Vec::new();
         for i in 40..43 {
             if let Some(sku) = row.get(i) {
@@ -227,6 +233,7 @@ pub fn parse_abc_item_files(
                 list,
                 stock: 0.0,
                 last_sold: None,
+                vendor,
             },
         );
     }
