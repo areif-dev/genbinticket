@@ -55,6 +55,12 @@ pub fn write_cached_imgs(cache: &HashMap<Ean13, String>) -> Result<(), std::io::
     Ok(())
 }
 
+#[cfg(feature = "vendor")]
+async fn fetch_img(ean: Ean13, cache: &mut HashMap<Ean13, String>) -> Option<String> {
+    None
+}
+
+#[cfg(not(feature = "vendor"))]
 async fn fetch_img(ean: Ean13, cache: &mut HashMap<Ean13, String>) -> Option<String> {
     if let Some(url) = cache.get(&ean) {
         return Some(url.to_string());
@@ -111,10 +117,12 @@ impl AbcProduct {
         qty: Option<u32>,
     ) -> Option<Label> {
         let upc = self.upcs().last()?.clone();
+
         let mut label = match fetch_img(upc.clone(), cache).await {
             Some(i) => Label::new().with_img(&i),
             None => Label::new(),
         };
+
         if let Some(q) = qty {
             label = label.with_qty(q);
         }
