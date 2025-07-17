@@ -4,3 +4,4 @@ TabOutput.tsv
 *.data 
 cached-imgs.json
 *.exe
+.env
