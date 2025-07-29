@@ -1,13 +1,15 @@
 mod product;
 mod server;
 
+use std::collections::HashMap;
+
+use clap::Parser;
 use ean13::Ean13;
 use genbinticket::Label;
 use product::AbcProduct;
 use server::start_server;
-use std::collections::HashMap;
-
-use clap::Parser;
+use vendor_controller::VendorController;
+use vendor_controllers::{ControllerWrapper, dib::DibController, ids::IdsController};
 
 #[derive(Parser)]
 struct Cli {
@@ -40,7 +42,94 @@ struct Cli {
     debug: bool,
 }
 
-pub fn read_216(tabfile: &str) -> Result<Vec<(String, Option<u32>)>, String> {
+async fn vendors_from_216(tabfile: &str) -> Result<HashMap<String, ControllerWrapper>, String> {
+    let mut rdr = csv::ReaderBuilder::new()
+        .delimiter(b'\t')
+        .flexible(true)
+        .has_headers(false)
+        .from_path(tabfile)
+        .or_else(|e| Err(format!("Can't open {} due to {}", tabfile, e)))?;
+
+    let mut vendors = HashMap::new();
+    for result in rdr.records().skip(1) {
+        let record =
+            result.or_else(|e| Err(format!("Bad row in bill TabOutput caused by {}", e)))?;
+
+        if let Some("ITEM # & DESCRIPTION") = record.get(17) {
+            if let Some(vend) = record.get(2) {
+                // Skip this vendor because we've already handled it if it's in the vendor map
+                if let Some(_) = vendors.get(vend) {
+                    continue;
+                }
+                match vend {
+                    "DO ITB0" => {
+                        let Ok(user) = std::env::var("DIB_USER") else {
+                            eprintln!("No env var for DIB_USER. Skipping");
+                            continue;
+                        };
+                        let Ok(passwd) = std::env::var("DIB_PASSWD") else {
+                            eprintln!("No env var for DIB_PASSWD. Skipping");
+                            continue;
+                        };
+                        let dib_controller = match DibController::new(5000).await {
+                            Ok(c) => c,
+                            Err(e) => {
+                                eprintln!("Failed to create DIB Controller due to {}. Skipping", e);
+                                continue;
+                            }
+                        };
+                        // let Ok(dib_controller) = DibController::new().await else {
+                        //     eprintln!("Failed to create DIB Controller. Will skip it.");
+                        //     continue;
+                        // };
+                        let dib_controller = dib_controller.user(user).passwd(passwd);
+                        if let Err(e) = dib_controller.login().await {
+                            eprintln!("Failed to login DibController due to {}", e);
+                            continue;
+                        };
+
+                        vendors.insert(
+                            String::from("DO ITB0"),
+                            ControllerWrapper::Dib(dib_controller),
+                        );
+                    }
+                    "FLOHA 0" => {
+                        let Ok(user) = std::env::var("IDS_USER") else {
+                            eprintln!("No env var for IDS_USER. Skipping");
+                            continue;
+                        };
+                        let Ok(passwd) = std::env::var("IDS_PASSWD") else {
+                            eprintln!("No env var for IDS_PASSWD. Skipping");
+                            continue;
+                        };
+                        let Ok(ids_controller) = IdsController::new(5000).await else {
+                            eprintln!("Failed to create IDS Controller. Will skip it.");
+                            continue;
+                        };
+                        let ids_controller = ids_controller.user(user).passwd(passwd);
+                        if let Err(e) = ids_controller.login().await {
+                            eprintln!("Failed to login IdsController due to {}", e);
+                            continue;
+                        }
+
+                        vendors.insert(
+                            String::from("FLOHA 0"),
+                            ControllerWrapper::Ids(ids_controller),
+                        );
+                    }
+                    others => {
+                        eprintln!("No controller implemented for {}", others);
+                        continue;
+                    }
+                }
+            }
+            continue;
+        }
+    }
+    Ok(vendors)
+}
+
+fn skus_qtys_from_216(tabfile: &str) -> Result<Vec<(String, Option<u32>)>, String> {
     let mut rdr = csv::ReaderBuilder::new()
         .delimiter(b'\t')
         .flexible(true)
@@ -49,15 +138,14 @@ pub fn read_216(tabfile: &str) -> Result<Vec<(String, Option<u32>)>, String> {
         .or_else(|e| Err(format!("Can't open {} due to {}", tabfile, e)))?;
 
     let mut skus_qtys = Vec::new();
-    for (i, result) in rdr.records().skip(2).enumerate() {
-        // ABC 2-16 report splits bills at every 100 items and inserts a new header. Always skip
-        // that header
-        if i > 0 && i % 100 == 0 {
+    for result in rdr.records().skip(1) {
+        let record =
+            result.or_else(|e| Err(format!("Bad row in bill TabOutput caused by {}", e)))?;
+
+        if let Some("ITEM # & DESCRIPTION") = record.get(17) {
             continue;
         }
 
-        let record =
-            result.or_else(|e| Err(format!("Bad row in bill TabOutput caused by {}", e)))?;
         let sku = match record.get(1) {
             Some(s) => s,
             None => {
@@ -81,13 +169,14 @@ async fn labels_from_skus(
     skus_qtys: Vec<(String, Option<u32>)>,
     all_products: &HashMap<String, AbcProduct>,
     img_cache: &mut HashMap<Ean13, String>,
+    vendors: &HashMap<String, ControllerWrapper>,
 ) -> Vec<Label> {
     let mut labels = Vec::new();
     for (sku, qty) in skus_qtys {
         let Some(product) = all_products.get(&sku) else {
             continue;
         };
-        let Some(label) = product.label(img_cache, qty).await else {
+        let Some(label) = product.label(img_cache, qty, vendors).await else {
             continue;
         };
         labels.push(label);
@@ -97,8 +186,13 @@ async fn labels_from_skus(
 
 #[tokio::main]
 async fn main() -> Result<(), String> {
+    if let Err(e) = dotenvy::dotenv() {
+        eprintln!("Failed to load env vars due to {}", e);
+    }
+
     let cli = Cli::parse();
-    let skus_qtys = read_216(&cli.tabfile)?;
+    let skus_qtys = skus_qtys_from_216(&cli.tabfile)?;
+    let vendors = vendors_from_216(&cli.tabfile).await?;
     let mut img_cache = product::read_cached_imgs();
     let all_products = product::parse_abc_item_files(&cli.detail_file, &cli.posted_file)
         .or_else(|e| Err(format!("Cannot read ABC inventory export due to {}", e)))?;
@@ -113,7 +207,7 @@ async fn main() -> Result<(), String> {
         );
     }
     eprintln!("Fetching images. This may take some time...");
-    let labels = labels_from_skus(good_skus, &all_products, &mut img_cache).await;
+    let labels = labels_from_skus(good_skus, &all_products, &mut img_cache, &vendors).await;
 
     // Save the updated image cache for faster fetching next time
     product::write_cached_imgs(&img_cache)

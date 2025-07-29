@@ -5,12 +5,12 @@ use tower_http::services::ServeDir;
 use axum::{
     Router,
     extract::{Query, State},
+    http::StatusCode,
     response::Html,
     routing::get,
 };
 use genbinticket::Label;
 use genbinticket::template_env::{self, *};
-use reqwest::StatusCode;
 use serde::Deserialize;
 
 pub struct AppState {

@@ -1,14 +1,14 @@
 use chrono::Utc;
 use genbinticket::Label;
 use rust_decimal::Decimal;
-use serde::{Deserialize, ser::Error};
+use serde::ser::Error;
 use std::{
     collections::HashMap,
     fs::{self, File},
     str::FromStr,
-    thread::sleep,
-    time::Duration,
 };
+use vendor_controller::VendorController;
+use vendor_controllers::ControllerWrapper;
 
 use ean13::Ean13;
 
@@ -34,16 +34,6 @@ fn price_from_str(price_str: &str) -> Result<Decimal, rust_decimal::Error> {
     Decimal::from_str(&price_str)
 }
 
-#[derive(Deserialize)]
-struct FetchImgResp {
-    items: Vec<FetchImgItem>,
-}
-
-#[derive(Deserialize)]
-struct FetchImgItem {
-    images: Vec<String>,
-}
-
 pub fn read_cached_imgs() -> HashMap<Ean13, String> {
     let raw_text = fs::read_to_string("cached-imgs.json").unwrap_or(String::new());
     serde_json::from_str(&raw_text).unwrap_or(HashMap::new())
@@ -64,7 +54,6 @@ pub struct AbcProduct {
     list: Decimal,
     stock: f64,
     last_sold: Option<chrono::NaiveDate>,
-    vendor: String,
 }
 
 impl AbcProduct {
@@ -84,52 +73,50 @@ impl AbcProduct {
         self.list
     }
 
-    pub fn vendor(&self) -> String {
-        self.vendor.clone()
-    }
-
-    #[cfg(feature = "vendor")]
-    async fn fetch_img(&self, cache: &mut HashMap<Ean13, String>) -> Option<String> {
+    async fn fetch_img(
+        &self,
+        cache: &mut HashMap<Ean13, String>,
+        vendors: &HashMap<String, ControllerWrapper>,
+    ) -> Option<String> {
         let ean = self.upcs().last()?.clone();
         if let Some(url) = cache.get(&ean) {
             return Some(url.to_string());
         }
 
-        None
-    }
-
-    #[cfg(not(feature = "vendor"))]
-    async fn fetch_img(&self, cache: &mut HashMap<Ean13, String>) -> Option<String> {
-        let ean = self.upcs().last()?.clone();
-        if let Some(url) = cache.get(&ean) {
-            return Some(url.to_string());
+        let mut img = None;
+        for (_name, vendor) in vendors {
+            match vendor {
+                ControllerWrapper::Ids(controller) => {
+                    let Ok(Some(prod)) = controller.product_from_ean(ean.clone()).await else {
+                        continue;
+                    };
+                    img = Some(prod.get_img_url());
+                }
+                ControllerWrapper::Dib(controller) => {
+                    let Ok(Some(prod)) = controller.product_from_ean(ean.clone()).await else {
+                        continue;
+                    };
+                    img = Some(prod.get_img_url());
+                }
+            }
         }
 
-        sleep(Duration::from_millis(100)); // Add a rate limit for better citizenship
-        let fetch_url = format!(
-            "https://api.upcitemdb.com/prod/trial/lookup?upc={}",
-            ean.to_upca_string()
-        );
-        let raw_response = reqwest::get(fetch_url).await.ok()?;
-        if !raw_response.status().is_success() {
-            return None;
+        if let Some(i) = img.clone() {
+            cache.insert(ean.clone(), i.to_string());
         }
-        let text = raw_response.text();
-        let resp: FetchImgResp = serde_json::from_str(&text.await.ok()?).ok()?;
-        let item = resp.items.get(0)?;
-        let img = item.images.get(0)?;
-        cache.insert(ean.clone(), img.to_string());
-        Some(img.to_string())
+
+        img
     }
 
     pub async fn label(
         &self,
         cache: &mut HashMap<Ean13, String>,
         qty: Option<u32>,
+        vendors: &HashMap<String, ControllerWrapper>,
     ) -> Option<Label> {
         let upc = self.upcs().last()?.clone();
 
-        let mut label = match self.fetch_img(cache).await {
+        let mut label = match self.fetch_img(cache, vendors).await {
             Some(i) => Label::new().with_img(&i),
             None => Label::new(),
         };
@@ -215,7 +202,6 @@ pub fn parse_abc_item_files(
             "Cannot parse a price in cents for list in row {}",
             i
         ))))?;
-        let vendor = row.get(10).unwrap_or("").trim().to_string();
         let mut alt_skus = Vec::new();
         for i in 40..43 {
             if let Some(sku) = row.get(i) {
@@ -233,7 +219,6 @@ pub fn parse_abc_item_files(
                 list,
                 stock: 0.0,
                 last_sold: None,
-                vendor,
             },
         );
     }
