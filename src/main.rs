@@ -93,7 +93,7 @@ async fn vendors_from_216(tabfile: &str) -> Result<HashMap<String, ControllerWra
                             ControllerWrapper::Dib(dib_controller),
                         );
                     }
-                    "FLOHA 0" => {
+                    "FLOHAL0" => {
                         let Ok(user) = std::env::var("IDS_USER") else {
                             eprintln!("No env var for IDS_USER. Skipping");
                             continue;
@@ -113,7 +113,7 @@ async fn vendors_from_216(tabfile: &str) -> Result<HashMap<String, ControllerWra
                         }
 
                         vendors.insert(
-                            String::from("FLOHA 0"),
+                            String::from("FLOHAL0"),
                             ControllerWrapper::Ids(ids_controller),
                         );
                     }
