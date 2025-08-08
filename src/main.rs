@@ -9,7 +9,9 @@ use genbinticket::Label;
 use product::AbcProduct;
 use server::start_server;
 use vendor_controller::VendorController;
-use vendor_controllers::{ControllerWrapper, dib::DibController, ids::IdsController};
+use vendor_controllers::{
+    ControllerWrapper, bci::BciController, dib::DibController, ids::IdsController,
+};
 
 #[derive(Parser)]
 struct Cli {
@@ -115,6 +117,27 @@ async fn vendors_from_216(tabfile: &str) -> Result<HashMap<String, ControllerWra
                         vendors.insert(
                             String::from("FLOHAL0"),
                             ControllerWrapper::Ids(ids_controller),
+                        );
+                    }
+                    "BRACAI0" => {
+                        let Ok(user) = std::env::var("BCI_USER") else {
+                            eprintln!("No env var for BCI_USER. Skipping");
+                            continue;
+                        };
+                        let Ok(passwd) = std::env::var("BCI_PASSWD") else {
+                            eprintln!("No env var for BCI_PASSWD. Skipping");
+                            continue;
+                        };
+                        let Ok(bci_controller) =
+                            BciController::new().user(user).passwd(passwd).login().await
+                        else {
+                            eprintln!("BciController failed to login");
+                            continue;
+                        };
+
+                        vendors.insert(
+                            String::from("BRACAI0"),
+                            ControllerWrapper::Bci(bci_controller),
                         );
                     }
                     others => {

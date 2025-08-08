@@ -98,6 +98,12 @@ impl AbcProduct {
                     };
                     img = Some(prod.get_img_url());
                 }
+                ControllerWrapper::Bci(controller) => {
+                    let Ok(Some(prod)) = controller.product_from_ean(ean.clone()).await else {
+                        continue;
+                    };
+                    img = Some(prod.get_img_url());
+                }
             }
         }
 
