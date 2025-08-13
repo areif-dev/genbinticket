@@ -93,7 +93,8 @@ impl AbcProduct {
                     img = Some(prod.get_img_url());
                 }
                 ControllerWrapper::Dib(controller) => {
-                    let Ok(Some(prod)) = controller.product_from_ean(ean.clone()).await else {
+                    let Ok(Some(prod)) = controller.quick_product_from_ean(ean.clone()).await
+                    else {
                         continue;
                     };
                     img = Some(prod.get_img_url());
