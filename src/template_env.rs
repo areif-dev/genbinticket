@@ -2,10 +2,10 @@ use std::str::FromStr;
 
 use barcoders::{
     generators::image::{Color, Image, Rotation},
-    sym::ean13::{EAN13 as barcodersEan13, UPCA},
+    sym::ean13::{EAN13, UPCA},
 };
 use base64::{Engine, engine::general_purpose};
-use ean13::Ean13;
+use gtin::{Gtin, GtinKind};
 use minijinja::context;
 use rust_decimal::Decimal;
 
@@ -19,27 +19,23 @@ pub fn pretty_price(val: &str) -> String {
 }
 
 pub fn encode_barcode(code: &str) -> String {
-    let code = match Ean13::new(code) {
+    let code = match Gtin::new(code) {
         Ok(c) => c,
         Err(_) => {
             return "Error while encoding".to_string();
         }
     };
-    let barcode = if code.is_upca() {
-        match UPCA::new(&code.to_string()) {
-            Ok(b) => b,
-            Err(_) => {
-                return "Error while encoding".to_string();
-            }
-        }
-    } else {
-        match barcodersEan13::new(code.to_string()) {
-            Ok(b) => b,
-            Err(_) => {
-                return "Error while encoding".to_string();
-            }
+    let try_barcode = match code.kind() {
+        GtinKind::Gtin12 => UPCA::new(&code.to_string()[1..]),
+        GtinKind::Gtin13 => EAN13::new(&code.to_string_no_padding()),
+        _ => {
+            return "Error while encoding".to_string();
         }
     };
+    let Ok(barcode) = try_barcode else {
+        return "Error while encoding".to_string();
+    };
+
     let png = Image::PNG {
         height: 80,
         xdim: 2,
@@ -59,23 +55,39 @@ pub fn encode_barcode(code: &str) -> String {
     format!("data:image/png;base64,{}", b64)
 }
 
-pub fn format_ean13(code: &str) -> String {
-    let code = match Ean13::new(code) {
+pub fn format_gtin(code: &str) -> String {
+    let code = match Gtin::new(code) {
         Ok(c) => c,
         Err(_) => {
-            return "Encountered invalid EAN13".to_string();
+            return "Encountered invalid GTIN".to_string();
         }
     };
 
-    let s = code.to_string();
-    format!("{}-{}", &s[0..10], &s[10..13])
+    let full_string = code.to_string_no_padding();
+    let last_3 = full_string
+        .chars()
+        .rev()
+        .take(3)
+        .collect::<String>()
+        .chars()
+        .rev()
+        .collect::<String>();
+    let the_rest = full_string
+        .chars()
+        .rev()
+        .skip(3)
+        .collect::<String>()
+        .chars()
+        .rev()
+        .collect::<String>();
+    format!("{}-{}", &the_rest, &last_3)
 }
 
 pub fn setup_env() -> Result<TemplateEnvironment<'static>, minijinja::Error> {
     let mut env = minijinja::Environment::new();
     env.add_filter("pretty_price", pretty_price);
     env.add_filter("encode_barcode", encode_barcode);
-    env.add_filter("format_ean13", format_ean13);
+    env.add_filter("format_gtin", format_gtin);
     env.set_loader(minijinja::path_loader("templates"));
     Ok(env)
 }

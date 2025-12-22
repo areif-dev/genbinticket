@@ -4,8 +4,8 @@ mod server;
 use std::collections::HashMap;
 
 use clap::Parser;
-use ean13::Ean13;
 use genbinticket::Label;
+use gtin::Gtin;
 use product::AbcProduct;
 use server::start_server;
 use vendor_controller::VendorController;
@@ -191,7 +191,7 @@ fn skus_qtys_from_216(tabfile: &str) -> Result<Vec<(String, Option<u32>)>, Strin
 async fn labels_from_skus(
     skus_qtys: Vec<(String, Option<u32>)>,
     all_products: &HashMap<String, AbcProduct>,
-    img_cache: &mut HashMap<Ean13, String>,
+    img_cache: &mut HashMap<Gtin, String>,
     vendors: &HashMap<String, ControllerWrapper>,
 ) -> Vec<Label> {
     let mut labels = Vec::new();
