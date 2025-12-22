@@ -22,7 +22,7 @@ pub struct AppState {
 #[derive(Clone, ValueEnum, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum SortOption {
-    /// Sorts [`Label`]s by the last 3 digits of their UPC/EAN. The last three digits are key as
+    /// Sorts [`Label`]s by the last 3 digits of their UPC/GTIN. The last three digits are key as
     /// these are usually the most unique and are usually what people look for.
     Upc,
 
@@ -45,17 +45,49 @@ pub enum SortOption {
 fn sort_labels(labels: &mut [Label], sort_option: SortOption) {
     match sort_option {
         SortOption::Upc => labels.sort_by(|a, b| {
-            let a = match a.ean13() {
+            let a = match a.gtin() {
                 Some(e) => e.to_string(),
                 None => return Ordering::Less,
             };
-            let b = match b.ean13() {
+            let b = match b.gtin() {
                 Some(e) => e.to_string(),
                 None => return Ordering::Greater,
             };
-            let trans_a = format!("{}{}", &a[10..], &a[..11]);
-            let trans_b = format!("{}{}", &b[10..], &b[..11]);
-            trans_a.cmp(&trans_b)
+            let last3a = a
+                .chars()
+                .rev()
+                .take(3)
+                .collect::<String>()
+                .chars()
+                .rev()
+                .collect::<String>();
+            let the_resta = a
+                .chars()
+                .rev()
+                .skip(3)
+                .collect::<String>()
+                .chars()
+                .rev()
+                .collect::<String>();
+            let last3b = b
+                .chars()
+                .rev()
+                .take(3)
+                .collect::<String>()
+                .chars()
+                .rev()
+                .collect::<String>();
+            let the_restb = b
+                .chars()
+                .rev()
+                .skip(3)
+                .collect::<String>()
+                .chars()
+                .rev()
+                .collect::<String>();
+            let transform_a = format!("{}{}", last3a, the_resta);
+            let transform_b = format!("{}{}", last3b, the_restb);
+            transform_a.cmp(&transform_b)
         }),
         SortOption::Sku => labels.sort_by(|a, b| {
             let a = match a.sku() {

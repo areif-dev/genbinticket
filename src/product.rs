@@ -10,7 +10,7 @@ use std::{
 use vendor_controller::VendorController;
 use vendor_controllers::ControllerWrapper;
 
-use ean13::Ean13;
+use gtin::Gtin;
 
 /// Strips out any characters from a string that would not be part of a base10 decimal number. EG
 /// "$" or the string "USD"
@@ -34,12 +34,12 @@ fn price_from_str(price_str: &str) -> Result<Decimal, rust_decimal::Error> {
     Decimal::from_str(&price_str)
 }
 
-pub fn read_cached_imgs() -> HashMap<Ean13, String> {
+pub fn read_cached_imgs() -> HashMap<Gtin, String> {
     let raw_text = fs::read_to_string("cached-imgs.json").unwrap_or(String::new());
     serde_json::from_str(&raw_text).unwrap_or(HashMap::new())
 }
 
-pub fn write_cached_imgs(cache: &HashMap<Ean13, String>) -> Result<(), std::io::Error> {
+pub fn write_cached_imgs(cache: &HashMap<Gtin, String>) -> Result<(), std::io::Error> {
     let file = File::create("cached-imgs.json")?;
     serde_json::to_writer(file, cache)?;
     Ok(())
@@ -50,7 +50,7 @@ pub struct AbcProduct {
     sku: String,
     alt_skus: Vec<String>,
     desc: String,
-    upcs: Vec<Ean13>,
+    upcs: Vec<Gtin>,
     list: Decimal,
     stock: f64,
     last_sold: Option<chrono::NaiveDate>,
@@ -65,7 +65,7 @@ impl AbcProduct {
         self.desc.clone()
     }
 
-    pub fn upcs(&self) -> Vec<Ean13> {
+    pub fn upcs(&self) -> Vec<Gtin> {
         self.upcs.to_vec()
     }
 
@@ -75,11 +75,11 @@ impl AbcProduct {
 
     async fn fetch_img(
         &self,
-        cache: &mut HashMap<Ean13, String>,
+        cache: &mut HashMap<Gtin, String>,
         vendors: &HashMap<String, ControllerWrapper>,
     ) -> Option<String> {
-        let ean = self.upcs().last()?.clone();
-        if let Some(url) = cache.get(&ean) {
+        let gtin = self.upcs().last()?.clone();
+        if let Some(url) = cache.get(&gtin) {
             return Some(url.to_string());
         }
 
@@ -87,20 +87,20 @@ impl AbcProduct {
         for (_name, vendor) in vendors {
             match vendor {
                 ControllerWrapper::Ids(controller) => {
-                    let Ok(Some(prod)) = controller.product_from_ean(ean.clone()).await else {
+                    let Ok(Some(prod)) = controller.product_from_gtin(gtin.clone()).await else {
                         continue;
                     };
                     img = Some(prod.get_img_url());
                 }
                 ControllerWrapper::Dib(controller) => {
-                    let Ok(Some(prod)) = controller.quick_product_from_ean(ean.clone()).await
+                    let Ok(Some(prod)) = controller.quick_product_from_gtin(gtin.clone()).await
                     else {
                         continue;
                     };
                     img = Some(prod.get_img_url());
                 }
                 ControllerWrapper::Bci(controller) => {
-                    let Ok(Some(prod)) = controller.product_from_ean(ean.clone()).await else {
+                    let Ok(Some(prod)) = controller.product_from_gtin(gtin.clone()).await else {
                         continue;
                     };
                     img = Some(prod.get_img_url());
@@ -109,7 +109,7 @@ impl AbcProduct {
         }
 
         if let Some(i) = img.clone() {
-            cache.insert(ean.clone(), i.to_string());
+            cache.insert(gtin.clone(), i.to_string());
         }
 
         img
@@ -117,7 +117,7 @@ impl AbcProduct {
 
     pub async fn label(
         &self,
-        cache: &mut HashMap<Ean13, String>,
+        cache: &mut HashMap<Gtin, String>,
         qty: Option<u32>,
         vendors: &HashMap<String, ControllerWrapper>,
     ) -> Option<Label> {
@@ -140,7 +140,7 @@ impl AbcProduct {
                 .with_desc(&self.desc())
                 .with_price(self.list())
                 .with_date(Utc::now().naive_local().date())
-                .with_ean13(upc),
+                .with_gtin(upc),
         )
     }
 }
@@ -186,18 +186,18 @@ pub fn parse_abc_item_files(
             .chars()
             .filter(|c| c.is_digit(10) || *c == ',')
             .collect();
-        let upcs: Vec<Ean13> = upc_str
+        let upcs: Vec<Gtin> = upc_str
             .split(",")
             .filter_map(|s| {
                 if s.len() == 11 {
-                    // Some ABC UPCs leave out the check digit, so make one up and let [`Ean13::from_str_nonstrict`] fix it
-                    Ean13::from_str_nonstrict(&format!("{}0", s)).ok()
+                    // Some ABC UPCs leave out the check digit, so make one up and let [`Gtin::nonstrict_new`] fix it
+                    Some(Gtin::nonstrict_new(&format!("{}0", s)))
                 } else if s.len() < 11 {
                     // Anything less than 11 characters long is probably a dead upc
                     None
                 } else {
                     // Anything 12 characters and up has a chance of being a good upc
-                    Ean13::from_str_nonstrict(s).ok()
+                    Some(Gtin::nonstrict_new(s))
                 }
             })
             .collect();

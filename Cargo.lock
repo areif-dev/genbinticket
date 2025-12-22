@@ -620,14 +620,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1aaf95b3e5c8f23aa320147307562d361db0ae0d51242340f558153b4eb2439b"
 
 [[package]]
-name = "ean13"
-version = "0.4.0"
-source = "git+https://github.com/areif-dev/ean13#d63175fed9a10dc781d99c4633b814cc0793f3c6"
-dependencies = [
- "serde",
-]
-
-[[package]]
 name = "either"
 version = "1.15.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -828,7 +820,7 @@ dependencies = [
  "clap",
  "csv",
  "dotenvy",
- "ean13",
+ "gtin",
  "minijinja",
  "rust_decimal",
  "serde",
@@ -878,6 +870,14 @@ name = "gimli"
 version = "0.31.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "07e28edb80900c19c28f1072f2e8aeca7fa06b23cd4169cefe1af5aa3260783f"
+
+[[package]]
+name = "gtin"
+version = "1.0.0"
+source = "git+https://github.com/areif-dev/gtin#3b7af0d421148bce7bbc56256531eded39b5d19e"
+dependencies = [
+ "serde",
+]
 
 [[package]]
 name = "h2"
@@ -2878,10 +2878,10 @@ checksum = "accd4ea62f7bb7a82fe23066fb0957d48ef677f6eeb8215f372f52e48bb32426"
 
 [[package]]
 name = "vendor-controller"
-version = "0.5.1"
+version = "1.0.0"
 dependencies = [
- "ean13",
  "fantoccini",
+ "gtin",
  "rust_decimal",
  "serde",
  "serde_json",
@@ -2889,10 +2889,10 @@ dependencies = [
 
 [[package]]
 name = "vendor-controllers"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
- "ean13",
  "fantoccini",
+ "gtin",
  "reqwest",
  "rust_decimal",
  "serde",

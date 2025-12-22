@@ -74,7 +74,7 @@
       overflow: hidden;
     }
 
-    .ean13-text {
+    .gtin-text {
       position: absolute;
       top: 0.663in;
       left: 0.033in;
@@ -191,11 +191,11 @@
       {% else %}
       <div class="description">Missing Desc</div>
       {% endif %}
-      {% if label.ean13 %}
-      <div class="ean13-text">{{ label.ean13 | format_ean13 }}</div>
-      <img src="{{ label.ean13 | encode_barcode }}" alt="Error while encoding" class="barcode" />
+      {% if label.gtin %}
+      <div class="gtin-text">{{ label.gtin | format_gtin }}</div>
+      <img src="{{ label.gtin | encode_barcode }}" alt="Error while encoding" class="barcode" />
       {% else %}
-      <div class="ean13-text">Missing UPC</div>
+      <div class="gtin-text">Missing UPC</div>
       {% endif %}
       {% if label.date %}
       <div class="date">{{ label.date }}</div>

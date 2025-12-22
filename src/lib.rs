@@ -1,7 +1,7 @@
 pub mod template_env;
 
 use chrono::NaiveDate;
-use ean13::Ean13;
+use gtin::Gtin;
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 
@@ -45,7 +45,7 @@ pub struct Label {
     price: Option<Decimal>,
     sku: Option<String>,
     desc: Option<String>,
-    ean13: Option<Ean13>,
+    gtin: Option<Gtin>,
     alt_skus: Vec<String>,
     img: Option<String>,
     date: Option<CustomNaiveDate>,
@@ -58,7 +58,7 @@ impl Label {
             price: None,
             sku: None,
             desc: None,
-            ean13: None,
+            gtin: None,
             alt_skus: Vec::new(),
             img: None,
             date: None,
@@ -78,8 +78,8 @@ impl Label {
         self.desc.clone()
     }
 
-    pub fn ean13(&self) -> Option<Ean13> {
-        self.ean13.clone()
+    pub fn gtin(&self) -> Option<Gtin> {
+        self.gtin.clone()
     }
 
     pub fn alt_skus(&self) -> Vec<String> {
@@ -133,9 +133,9 @@ impl Label {
         }
     }
 
-    pub fn with_ean13(self, ean13: Ean13) -> Self {
+    pub fn with_gtin(self, gtin: Gtin) -> Self {
         Label {
-            ean13: Some(ean13),
+            gtin: Some(gtin),
             ..self
         }
     }
